@@ -13,9 +13,11 @@ if BSG_DIR not in sys.path:
 
 from .config import NetworkConfig, NeuronConfig, ProtocolConfig, ChR2Config, RESULTS_DIR
 from .network import BalancedNetwork
+from .licking import LickingNetworkConfig, LickingNetwork, licking_neuron_config, generate_W_licking
 
 __all__ = [
     'ROOT', 'BSG_DIR', 'RESULTS_DIR',
     'NetworkConfig', 'NeuronConfig', 'ProtocolConfig', 'ChR2Config',
     'BalancedNetwork',
+    'LickingNetworkConfig', 'LickingNetwork', 'licking_neuron_config', 'generate_W_licking',
 ]

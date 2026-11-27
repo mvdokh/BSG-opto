@@ -11,6 +11,8 @@ from . import (
     opto_threshold_figure,
     top10_geff_figure,
     drive_sweep_rasters,
+    bsg_benchmark_1000,
+    licking_model,
 )
 
 EXPERIMENTS = {
@@ -25,4 +27,6 @@ EXPERIMENTS = {
     'opto-threshold-figure': opto_threshold_figure,
     'top10-geff': top10_geff_figure,
     'drive-sweep-rasters': drive_sweep_rasters,
+    'bsg-benchmark-1000': bsg_benchmark_1000,
+    'licking-model': licking_model,
 }
