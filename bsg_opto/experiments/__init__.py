@@ -8,6 +8,9 @@ from . import (
     opsin_to_i_strength,
     state_dependence,
     tonic_altconn,
+    opto_threshold_figure,
+    top10_geff_figure,
+    drive_sweep_rasters,
 )
 
 EXPERIMENTS = {
@@ -19,4 +22,7 @@ EXPERIMENTS = {
     'opsin-to-i-strength': opsin_to_i_strength,
     'state-dependence': state_dependence,
     'tonic-altconn': tonic_altconn,
+    'opto-threshold-figure': opto_threshold_figure,
+    'top10-geff': top10_geff_figure,
+    'drive-sweep-rasters': drive_sweep_rasters,
 }
