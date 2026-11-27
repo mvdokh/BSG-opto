@@ -13,6 +13,7 @@ from . import (
     drive_sweep_rasters,
     bsg_benchmark_1000,
     licking_model,
+    licking_opto_figure,
 )
 
 EXPERIMENTS = {
@@ -29,4 +30,5 @@ EXPERIMENTS = {
     'drive-sweep-rasters': drive_sweep_rasters,
     'bsg-benchmark-1000': bsg_benchmark_1000,
     'licking-model': licking_model,
+    'licking-opto-figure': licking_opto_figure,
 }

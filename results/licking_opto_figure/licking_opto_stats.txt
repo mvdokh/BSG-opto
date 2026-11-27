@@ -1,0 +1,21 @@
+=== 6-8 Hz Licking BSG Optogenetic Gating Summary (N=300, 150E/150I, 10% E = 15 ChR2 cells, tau_V=18 ms) ===
+Rest (D = 0) across 36 intensity x desensitization regimes (I_max=10..320, I_ss/I_peak=0.1..1.0 & var phi):
+  Max mean unlit rate SD = 0.64 sp/s, max mean Re(lambda_max) = 0.788 (< 1.0 everywhere)
+
+Representative examples (seed 1, median draw 7, var. light + ChR2 desens., I_max = 80):
+  D= 0 + laser : unlit rate SD = 0.33 sp/s, Re(lam) = 0.48
+  D=12 + laser : unlit rate SD = 6.28 sp/s (pre=0.73, post=1.65), freq = 7.50 Hz, Re(lam) = 1.04
+  D=20 no laser: unlit rate SD = 12.92 sp/s, freq = 7.50 Hz, Re(lam) = 1.15
+
+Drive sweep (mean unlit rate SD in sp/s, n=30 draws):
+  No laser (ctrl)      : D=0:0.25 | D=8:0.53 | D=10:0.63 | D=12:0.76 | D=13:0.99 | D=14:4.74 | D=20:12.98
+  Var. desens (I=40)   : D=0:0.28 | D=8:0.61 | D=10:0.74 | D=12:3.44 | D=13:6.27 | D=14:8.16 | D=20:13.94
+  Var. desens (I=80)   : D=0:0.34 | D=8:0.73 | D=10:2.11 | D=12:6.62 | D=13:8.37 | D=14:9.74 | D=20:14.28
+  Uni. desens (I=40)   : D=0:0.30 | D=8:0.67 | D=10:1.09 | D=12:5.74 | D=13:7.73 | D=14:9.28 | D=20:14.25
+  No-desens step (I=40): D=0:0.54 | D=8:2.41 | D=10:5.27 | D=12:8.35 | D=13:9.58 | D=14:10.67 | D=20:13.20
+  No-desens step(I=160): D=0:0.64 | D=8:2.17 | D=10:3.64 | D=12:5.75 | D=13:6.92 | D=14:8.22 | D=20:10.33
+
+Evoked licking frequency (Hz):
+  No laser at D=20           : 7.50 +/- 0.00 Hz
+  Var. desens (I=80) at D=12 : 7.52 +/- 0.04 Hz (n=30/30 rhythmic)
+  Step (I=40) at D=12        : 7.52 +/- 0.06 Hz

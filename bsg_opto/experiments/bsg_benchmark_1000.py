@@ -47,6 +47,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.offsetbox import AnchoredOffsetbox, DrawingArea, HPacker, TextArea
+from matplotlib.patches import Circle
 from scipy.stats import spearmanr
 
 from bsg_opto.config import NetworkConfig, NeuronConfig, RESULTS_DIR
@@ -400,11 +402,13 @@ def build_figure(data: dict, out_dir: str):
     ax_b.set_title('Fraction of random networks oscillating vs. tonic drive', fontsize=6.4, pad=5)
     ax_b.legend(loc='upper left', frameon=False, fontsize=4.75, handlelength=2.3, labelspacing=0.22)
 
-    # Annotate exact D = 20 fractions right on the curves (cleanly separated)
-    ax_b.text(19.9, pct_ge2[-1] - 4.0, f'{pct_ge2[-1]:.1f}%', ha='right', va='top',
-              fontsize=5.2, fontweight='bold', color=COL_MAIN)
+    # Annotate exact D = 20 fractions right on all 4 curves (cleanly separated)
     ax_b.text(19.9, pct_ge2_cplx[-1] + 2.0, f'{pct_ge2_cplx[-1]:.1f}%', ha='right', va='bottom',
               fontsize=5.2, fontweight='bold', color=COL_CPLX)
+    ax_b.text(19.9, pct_ge2[-1] + 2.2, f'{pct_ge2[-1]:.1f}%', ha='right', va='bottom',
+              fontsize=5.2, fontweight='bold', color=COL_MAIN)
+    ax_b.text(19.9, pct_ge5[-1] + 2.2, f'{pct_ge5[-1]:.1f}%', ha='right', va='bottom',
+              fontsize=5.2, fontweight='bold', color='#5A6270')
     ax_b.text(19.9, pct_ge2_real[-1] - 3.0, f'{pct_ge2_real[-1]:.1f}%', ha='right', va='top',
               fontsize=5.2, fontweight='bold', color=COL_REAL)
 
@@ -463,6 +467,14 @@ def build_figure(data: dict, out_dir: str):
         f'Faster complex mode (seed {ex_seeds[1]}, $\\lambda_1 = {ex_lam1[1].real:.2f} \\pm {abs(ex_lam1[1].imag):.2f}i$)',
         f'Real-mode fixed point (seed {ex_seeds[2]}, $\\lambda_1 = {ex_lam1[2].real:.2f}$)',
     ]
+    # Colored group dots matching Panels a & b:
+    #   red = Complex lam_1, grey = Strong rhythm (>=5 sp/s), amber = Reference seed 1, blue = Real lam_1
+    COL_STRONG = '#6E7785'
+    c_dot_groups = [
+        [COL_CPLX, COL_STRONG, COL_REF],
+        [COL_CPLX, COL_STRONG],
+        [COL_REAL],
+    ]
     im_c = None
     for k in range(3):
         axr, axn = ax_cr[k], ax_cn[k]
@@ -472,7 +484,21 @@ def build_figure(data: dict, out_dir: str):
         axr.set_yticks([0, 100, 200])
         axr.spines['top'].set_visible(True); axr.spines['right'].set_visible(True)
         axr.spines['top'].set_linewidth(0.5); axr.spines['right'].set_linewidth(0.5)
-        axr.set_title(c_titles[k], fontsize=5.8, pad=4.0)
+
+        # Title + inline colored group dots centered cleanly above each raster
+        children = [TextArea(c_titles[k], textprops=dict(fontsize=5.5, color='#000000'))]
+        dot_cols = c_dot_groups[k]
+        da_w = 5.4 * len(dot_cols)
+        da = DrawingArea(da_w, 6.0, 0.0, 0.0)
+        for j, dcol in enumerate(dot_cols):
+            da.add_artist(Circle((2.4 + 5.2 * j, 3.0), radius=1.95, facecolor=dcol,
+                                 edgecolor='#222222', linewidth=0.35))
+        children.append(da)
+        pack = HPacker(children=children, align='center', pad=0.0, sep=2.6)
+        ab = AnchoredOffsetbox(loc='lower center', child=pack, frameon=False,
+                               bbox_to_anchor=(0.5, 1.025), bbox_transform=axr.transAxes,
+                               pad=0.0, borderpad=0.0)
+        axr.add_artist(ab)
         if k == 0:
             axr.set_ylabel('Neuron (phase)', labelpad=2.0)
         else:
@@ -653,7 +679,7 @@ def save_stats_and_caption(data: dict, out_dir: str):
 
 **b**, Percentage of random networks exhibiting rhythmic firing (temporal rate $\\mathrm{{s.d.}} \\ge 2$ sp/s, solid black; strong rhythm $\\mathrm{{s.d.}} \\ge 5$ sp/s, dashed grey) across $D = 1\\text{{–}}20$. At $D = 20$, {100*rhy20.mean():.1f}% ({rhy20.sum()}/1,000) of all networks oscillate above 2 sp/s and {100*str20.mean():.1f}% ({str20.sum()}/1,000) exceed 5 sp/s: {100*(osc20[is_cplx]>=2).mean():.1f}% of complex-$\\lambda_1$ ($\\mathrm{{Im}}\\,\\lambda_1 \\neq 0$, rotational) networks oscillate (red) versus only {100*(osc20[is_real]>=2).mean():.1f}% of real-$\\lambda_1$ ($\\mathrm{{Im}}\\,\\lambda_1 = 0$, non-rotational) networks (blue). Inset: distribution of onset tonic drive $D_{{\\mathrm{{th}}}}$ (first drive with temporal rate $\\mathrm{{s.d.}} \\ge 2$ sp/s, $n = {d_th.size}$ networks; median $D_{{\\mathrm{{th}}}} = {np.median(d_th):.0f}$).
 
-**c**, Representative phase-sorted population firing-rate rasters (top, in sp/s) and antagonist flexor/extensor motor-nerve readouts (bottom; shared scale, 2–8 s steady state) at $D = 20$ illustrating three dynamical archetypes: the classic reference oscillator (`seed = {ex_seeds[0]}`, $\\lambda_1 = {ex_lam1[0].real:.2f} \\pm {abs(ex_lam1[0].imag):.2f}i$, amplitude $\\mathrm{{s.d.}} = {ex_sd[0]:.2f}$ sp/s, oscillation frequency $f = {ex_freq[0]:.2f}$ Hz), a faster complex-mode oscillator (`seed = {ex_seeds[1]}`, $\\lambda_1 = {ex_lam1[1].real:.2f} \\pm {abs(ex_lam1[1].imag):.2f}i$, amplitude $\\mathrm{{s.d.}} = {ex_sd[1]:.2f}$ sp/s, $f = {ex_freq[1]:.2f}$ Hz), and a purely real leading-eigenvalue realization trapped in a static non-oscillatory fixed point (`seed = {ex_seeds[2]}`, $\\lambda_1 = {ex_lam1[2].real:.2f}$, amplitude $\\mathrm{{s.d.}} = {ex_sd[2]:.2f}$ sp/s).
+**c**, Representative phase-sorted population firing-rate rasters (top, in sp/s) and antagonist flexor/extensor motor-nerve readouts (bottom; shared scale, 2–8 s steady state) at $D = 20$ illustrating three dynamical archetypes, with coloured dots following each title indicating membership in the groups from **a** and **b** (red: complex $\\lambda_1$; grey: strong rhythm $\\mathrm{{s.d.}} \\ge 5$ sp/s; amber: reference `seed = 1`; blue: real $\\lambda_1$): the classic reference oscillator (`seed = {ex_seeds[0]}`, $\\lambda_1 = {ex_lam1[0].real:.2f} \\pm {abs(ex_lam1[0].imag):.2f}i$, amplitude $\\mathrm{{s.d.}} = {ex_sd[0]:.2f}$ sp/s, oscillation frequency $f = {ex_freq[0]:.2f}$ Hz), a faster complex-mode oscillator (`seed = {ex_seeds[1]}`, $\\lambda_1 = {ex_lam1[1].real:.2f} \\pm {abs(ex_lam1[1].imag):.2f}i$, amplitude $\\mathrm{{s.d.}} = {ex_sd[1]:.2f}$ sp/s, $f = {ex_freq[1]:.2f}$ Hz), and a purely real leading-eigenvalue realization trapped in a static non-oscillatory fixed point (`seed = {ex_seeds[2]}`, $\\lambda_1 = {ex_lam1[2].real:.2f}$, amplitude $\\mathrm{{s.d.}} = {ex_sd[2]:.2f}$ sp/s).
 
 **d**, Leading connectivity eigenvalue $(\\mathrm{{Re}}\\,\\lambda_1, |\\mathrm{{Im}}\\,\\lambda_1|)$ of each of the 1,000 random matrices $W$, coloured by temporal rate s.d. (sp/s) at $D = 20$. Networks whose rightmost eigenvalue lands on the real axis ($\\mathrm{{Im}}\\,\\lambda_1 = 0$) predominantly undergo a non-oscillatory pitchfork-like instability rather than a Hopf oscillation.
 
