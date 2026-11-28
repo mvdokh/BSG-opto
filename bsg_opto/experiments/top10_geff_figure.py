@@ -118,7 +118,7 @@ def run(out_dir: str = DEFAULT_OUT, i_max: float = 40.0, **_):
     ex_sd = np.array([unlit_mean(out_ex['on']['sd'][:, k], ex_specs[k][2]) for k in range(len(ex_specs))])
     ex_lam = np.array([leading_real_eig(W, out_ex['on']['Vmean'][:, k], neuron) for k in range(len(ex_specs))])
     for k, (lbl, _, _) in enumerate(ex_specs):
-        print(f'  Example {lbl:28s}: SD = {ex_sd[k]:.2f} Hz, Re(lam) = {ex_lam[k]:.3f}', flush=True)
+        print(f'  Example {lbl:28s}: SD = {ex_sd[k]:.2f} sp/s, Re(lam) = {ex_lam[k]:.3f}', flush=True)
 
     # 3. Full tonic drive sweep D = 0..20: Top-10 g_eff, Bot-10 g_eff, Random 10% E (n=30), No laser
     drives = np.arange(0, 21)
@@ -310,7 +310,7 @@ def run(out_dir: str = DEFAULT_OUT, i_max: float = 40.0, **_):
         else:
             axr.set_yticklabels([])
 
-        axr.text(0.96, 0.05, f'SD = {ex_sd[k_ex]:.2f} Hz | Re $\\lambda$ = {ex_lam[k_ex]:.2f}',
+        axr.text(0.96, 0.05, f'SD = {ex_sd[k_ex]:.2f} sp/s | Re $\\lambda$ = {ex_lam[k_ex]:.2f}',
                  transform=axr.transAxes, ha='right', va='bottom', fontsize=5.0, color='white',
                  bbox=dict(boxstyle='round,pad=0.17', fc='#000000', alpha=0.58, lw=0))
 
@@ -328,7 +328,7 @@ def run(out_dir: str = DEFAULT_OUT, i_max: float = 40.0, **_):
             axn.set_yticklabels([])
 
     cb = fig.colorbar(im_r, cax=ax_cb)
-    cb.set_label('Firing rate (Hz)', fontsize=6.0, labelpad=2.5)
+    cb.set_label('Firing rate (sp/s)', fontsize=6.0, labelpad=2.5)
     cb.set_ticks([0, 25, 50])
     cb.ax.tick_params(labelsize=5.5, length=2, width=0.5)
     cb.outline.set_linewidth(0.5)
@@ -352,7 +352,7 @@ def run(out_dir: str = DEFAULT_OUT, i_max: float = 40.0, **_):
     ax_f.set_xticks([0, 5, 10, 15, 20])
     ax_f.set_yticks([0, 2, 4, 6, 8])
     ax_f.set_xlabel('Background tonic drive $D$', labelpad=2.2)
-    ax_f.set_ylabel('Unlit rhythmicity (SD, Hz)', labelpad=2.2)
+    ax_f.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
     ax_f.set_title('Top-10 vs. Bot-10 $g_{\\mathrm{eff}}$ across drive $D$', fontsize=6.5, pad=5)
     ax_f.text(13.85, 0.72, '$D_{\\mathrm{th}}$', fontsize=5.3, color='#555555')
     ax_f.legend(loc='upper left', frameon=False, fontsize=5.2, handlelength=1.5, labelspacing=0.25)

@@ -573,7 +573,7 @@ def build_figure(data: dict, out_dir: str):
     ax_cn.set_ylabel('XII nerve', labelpad=2.2)
 
     cb_c = fig.colorbar(im_c, cax=ax_ccb)
-    cb_c.set_label('Rate (Hz)', fontsize=5.9, labelpad=2.5)
+    cb_c.set_label('Firing rate (sp/s)', fontsize=5.9, labelpad=2.5)
     cb_c.set_ticks([0, 25, 50])
     cb_c.ax.tick_params(labelsize=5.4, length=1.8, width=0.5)
     cb_c.outline.set_linewidth(0.5)
@@ -625,7 +625,7 @@ def build_figure(data: dict, out_dir: str):
     ax_e.set_xlim(1, 20.3); ax_e.set_ylim(-0.3, 18.0)
     ax_e.set_xticks([1, 5, 10, 15, 20]); ax_e.set_yticks([0, 5, 10, 15])
     ax_e.set_xlabel('Global tonic drive $D$', labelpad=2.2)
-    ax_e.set_ylabel('Population rhythmicity (SD, Hz)', labelpad=2.2)
+    ax_e.set_ylabel('Oscillation amplitude (rate SD, sp/s)', labelpad=2.2)
     ax_e.set_title('100% rhythmic reliability ($n = 200$)', fontsize=6.4, pad=4.5)
     ax_e.legend(loc='upper left', frameon=False, fontsize=4.9, handlelength=1.4, labelspacing=0.22)
 
@@ -674,7 +674,7 @@ def build_figure(data: dict, out_dir: str):
     # Show uniform gain invariance reference across same modulation span
     uni_f_mean = float(data['g_freq'].mean())
     ax_g.axhline(uni_f_mean, color=COL_ORIG, ls='-.', lw=1.0,
-                 label=f'Uniform gain (amp. {data["g_sd"][0].mean():.0f}→{data["g_sd"][-1].mean():.0f} Hz)', zorder=3)
+                 label=f'Uniform gain (amp. {data["g_sd"][0].mean():.0f}→{data["g_sd"][-1].mean():.0f} sp/s)', zorder=3)
 
     ax_g.set_xlim(-0.54, 0.54); ax_g.set_ylim(5.4, 9.2)
     ax_g.set_xticks([-0.5, -0.25, 0.0, 0.25, 0.5]); ax_g.set_yticks([6, 7, 8, 9])
@@ -719,13 +719,13 @@ def save_stats_and_caption(data: dict, out_dir: str):
         f'W_bulk={l_cfg.W_bulk}, rot_alpha={l_cfg.rot_alpha}, rot_psi={l_cfg.rot_psi_deg} deg, tau_V=18 ms, dt=1 ms',
         f'Seed 1 leading eigval: {lam_l.real:.3f} +/- {abs(lam_l.imag):.3f}i',
         f'200-model ensemble at D = 20:',
-        f'  Rhythmic (>=2 Hz): {(sd20>=2).sum()}/{n_m} ({100*(sd20>=2).mean():.1f}%)',
-        f'  Inside 6-8 Hz    : {in68.sum()}/{n_m} ({100*in68.mean():.1f}%)',
-        f'  Median SD        : {np.median(sd20):.2f} Hz (IQR {np.percentile(sd20,25):.2f}-{np.percentile(sd20,75):.2f})',
-        f'  Median freq      : {np.median(f20):.2f} Hz (5th-95th: {np.percentile(f20,5):.2f}-{np.percentile(f20,95):.2f} Hz, '
+        f'  Rhythmic (>=2 sp/s): {(sd20>=2).sum()}/{n_m} ({100*(sd20>=2).mean():.1f}%)',
+        f'  Inside 6-8 Hz      : {in68.sum()}/{n_m} ({100*in68.mean():.1f}%)',
+        f'  Median rate SD     : {np.median(sd20):.2f} sp/s (IQR {np.percentile(sd20,25):.2f}-{np.percentile(sd20,75):.2f})',
+        f'  Median freq        : {np.median(f20):.2f} Hz (5th-95th: {np.percentile(f20,5):.2f}-{np.percentile(f20,95):.2f} Hz, '
         f'mean {f20.mean():.2f}+/-{f20.std():.2f} Hz)',
-        f'  Median spec conc : {np.median(ens_c[:,-1]):.3f}',
-        f'  Median onset D_th: {np.median(d_th):.1f} (IQR {np.percentile(d_th,25):.1f}-{np.percentile(d_th,75):.1f})',
+        f'  Median spec conc   : {np.median(ens_c[:,-1]):.3f}',
+        f'  Median onset D_th  : {np.median(d_th):.1f} (IQR {np.percentile(d_th,25):.1f}-{np.percentile(d_th,75):.1f})',
         '',
         'Parameter ablation (30 seeds each, D = 20):',
     ]
@@ -734,20 +734,20 @@ def save_stats_and_caption(data: dict, out_dir: str):
         fm = np.median(data['abl_freq'][k, rhy]) if rhy.any() else float('nan')
         iqr_lo = np.percentile(data['abl_freq'][k, rhy], 25) if rhy.any() else float('nan')
         iqr_hi = np.percentile(data['abl_freq'][k, rhy], 75) if rhy.any() else float('nan')
-        lines.append(f'  {lbl.replace(chr(10), " "):45s} | rhy={100*rhy.mean():5.1f}% | med SD={np.median(data["abl_sd"][k]):5.2f} | '
+        lines.append(f'  {lbl.replace(chr(10), " "):45s} | rhy={100*rhy.mean():5.1f}% | med SD={np.median(data["abl_sd"][k]):5.2f} sp/s | '
                      f'med f={fm:4.2f} ({iqr_lo:.2f}-{iqr_hi:.2f}) Hz')
     lines += [
         '',
         'Uniform gain modulation (n = 20 networks, D = 20):',
-        '  ' + '; '.join(f'g={g:.2f}: f={data["g_freq"][i].mean():.2f} Hz, SD={data["g_sd"][i].mean():.1f} Hz'
+        '  ' + '; '.join(f'g={g:.2f}: f={data["g_freq"][i].mean():.2f} Hz, SD={data["g_sd"][i].mean():.1f} sp/s'
                          for i, g in enumerate(data['gains'])),
         'Selective gain modulation (n = 10 networks, D = 20, top/bot 15%):',
-        '  ' + '; '.join(f'm={m:+.2f}: f={data["sel_freq"][i].mean():.2f}+/-{data["sel_freq"][i].std():.2f} Hz, SD={data["sel_sd"][i].mean():.1f} Hz'
+        '  ' + '; '.join(f'm={m:+.2f}: f={data["sel_freq"][i].mean():.2f}+/-{data["sel_freq"][i].std():.2f} Hz, SD={data["sel_sd"][i].mean():.1f} sp/s'
                          for i, m in enumerate(data['sel_mod_idxs'])),
         '',
         f'BSG-opto compatibility check (10% E cells, var. light I_max=40, n=20 draws): '
-        f'D=0: {data["opto_d0"].mean():.2f}+/-{data["opto_d0"].std():.2f} Hz; '
-        f'D=12: {data["opto_d12"].mean():.2f}+/-{data["opto_d12"].std():.2f} Hz (max {data["opto_d12"].max():.2f} Hz)',
+        f'D=0: {data["opto_d0"].mean():.2f}+/-{data["opto_d0"].std():.2f} sp/s; '
+        f'D=12: {data["opto_d12"].mean():.2f}+/-{data["opto_d12"].std():.2f} sp/s (max {data["opto_d12"].max():.2f} sp/s)',
     ]
     txt = '\n'.join(lines)
     print(txt, flush=True)
@@ -756,19 +756,19 @@ def save_stats_and_caption(data: dict, out_dir: str):
 
     md_caption = f"""**Fig. 2 | Design, parameter ablation, and 200-network validation of a 6–8 Hz mammalian licking BSG model.**
 
-**a**, Systematic parameter ablation ($n = 30$ random realizations per condition at $D = 20$; bars show median peak frequency among rhythmic models, error bars show interquartile range, percentages denote fraction with $\\mathrm{{s.d.}} \\ge 2$ Hz; green band marks the 6–8 Hz rodent licking frequency range). Scaling neuron count ($N = 500$), connection probability ($C = 0.25$), or transfer gain ($2.0$) individually preserves slow oscillations ($< 1$ Hz). Reducing the effective membrane/synaptic time constant $\\tau_V$ alone from 50 ms to 18 ms yields only modest speedup ({np.median(data['abl_freq'][4, data['abl_sd'][4]>=2]):.2f} Hz) while retaining fixed-point failures (70% rhythmic); introducing phase-shifted rotational Dale connectivity alone ($\\alpha = 0.68$, $\\psi = 40^\\circ$) lifts reliability to 100% and multiplies frequency ({np.median(data['abl_freq'][5, data['abl_sd'][5]>=2]):.2f} Hz). Combining mammalian $\\tau_V = 18$ ms with rotational Dale connectivity ($N = 300$, $C = 0.15$) places median frequency directly in the physiological licking band ({np.median(f20):.2f} Hz, 100% rhythmic).
+**a**, Systematic parameter ablation ($n = 30$ random realizations per condition at $D = 20$; bars show median peak frequency among rhythmic models, error bars show interquartile range, percentages denote fraction with temporal rate $\\mathrm{{s.d.}} \\ge 2$ sp/s; green band marks the 6–8 Hz rodent licking frequency range). Scaling neuron count ($N = 500$), connection probability ($C = 0.25$), or transfer gain ($2.0$) individually preserves slow oscillations ($< 1$ Hz). Reducing the effective membrane/synaptic time constant $\\tau_V$ alone from 50 ms to 18 ms yields only modest speedup ({np.median(data['abl_freq'][4, data['abl_sd'][4]>=2]):.2f} Hz) while retaining fixed-point failures (70% rhythmic); introducing phase-shifted rotational Dale connectivity alone ($\\alpha = 0.68$, $\\psi = 40^\\circ$) lifts reliability to 100% and multiplies frequency ({np.median(data['abl_freq'][5, data['abl_sd'][5]>=2]):.2f} Hz). Combining mammalian $\\tau_V = 18$ ms with rotational Dale connectivity ($N = 300$, $C = 0.15$) places median frequency directly in the physiological licking band ({np.median(f20):.2f} Hz, 100% rhythmic).
 
-**b**, Complex eigenvalue spectrum of the Licking BSG weight matrix (`seed = 1`, red; $N = 300$, 150 E / 150 I, $C = 0.15$, $g = 1$, $W_{{\\mathrm{{bulk}}}} = 0.58$, $\\alpha = 0.68$, $\\psi = 40^\\circ$) overlaid on the original BSG spectrum (grey). Strict Dale's law and exact per-neuron E/I in-degree balance ($W\\mathbf{{1}} = 0$) are preserved while isolating a fast rotational complex-conjugate eigenmode ($\\lambda_1 = {lam_l.real:.2f} \\pm {abs(lam_l.imag):.2f}i$) cleanly outside the random bulk. Inset: phase-shifted excitatory ($p_E \\propto 1 + \\alpha\\cos(\\Delta\\theta - \\psi)$, red) and anti-phase inhibitory ($p_I \\propto 1 - \\alpha\\cos(\\Delta\\theta - \\psi)$, blue) connection-probability kernels.
+**b**, Complex eigenvalue spectrum of the Licking BSG weight matrix (`seed = 1`, red; $N = 300$, 150 E / 150 I, $C = 0.15$, $g = 1$, nominal bulk radius $W_{{\\mathrm{{bulk}}}} = 0.58$, $\\alpha = 0.68$, $\\psi = 40^\\circ$) overlaid on the original BSG spectrum (grey; nominal radius $W_{{\\mathrm{{radius}}}} = 1.0$). Strict Dale's law and exact per-neuron E/I in-degree balance ($W\\mathbf{{1}} = 0$) are preserved while isolating a fast rotational complex-conjugate eigenmode ($\\lambda_1 = {lam_l.real:.2f} \\pm {abs(lam_l.imag):.2f}i$) cleanly outside the random bulk. Inset: phase-shifted excitatory ($p_E \\propto 1 + \\alpha\\cos(\\Delta\\theta - \\psi)$, red) and anti-phase inhibitory ($p_I \\propto 1 - \\alpha\\cos(\\Delta\\theta - \\psi)$, blue) connection-probability kernels.
 
-**c**, Representative 6–8 Hz licking bout (`seed = 1`, global drive $D = 20$ turned on at $t = 1.0$ s) showing phase-sorted E and I firing-rate rasters (top) and simulated antagonist hypoglossal (XII) protractor/retractor nerve readouts (bottom; ~138 ms cycle period, ~7.3 Hz).
+**c**, Representative 6–8 Hz licking bout (`seed = 1`, global drive $D = 20$ turned on at $t = 1.0$ s) showing phase-sorted E and I firing-rate rasters (top, in sp/s) and simulated antagonist hypoglossal (XII) protractor/retractor nerve readouts (bottom; ~138 ms cycle period, ~7.3 Hz).
 
 **d**, Normalized population power spectral density comparing the Licking BSG model (narrowband peak at ~7.25 Hz inside the 6–8 Hz band) against the original BSG model (peak at 0.75 Hz). Inset: smooth circular rotational trajectory in PC1–PC2 state space.
 
-**e**, Population rhythmicity across tonic drive $D = 1\\text{{–}}20$ for $n = 200$ random Licking BSG realizations (median, IQR, and 5th–95th percentile bands in red; 100.0% rhythmic at $D = 20$, median $\\mathrm{{s.d.}} = {np.median(sd20):.2f}$ Hz, median onset threshold $D_{{\\mathrm{{th}}}} = {np.median(d_th):.0f}$) compared against the 1,000-model original BSG median (dashed grey).
+**e**, Population oscillation amplitude (mean temporal firing-rate s.d., sp/s) across tonic drive $D = 1\\text{{–}}20$ for $n = 200$ random Licking BSG realizations (median, IQR, and 5th–95th percentile bands in red; 100.0% rhythmic at $D = 20$, median $\\mathrm{{s.d.}} = {np.median(sd20):.2f}$ sp/s, median onset threshold $D_{{\\mathrm{{th}}}} = {np.median(d_th):.0f}$) compared against the 1,000-model original BSG median (dashed grey).
 
 **f**, Peak oscillation frequency distribution at $D = 20$ across all $n = 200$ Licking BSG networks (red; median {np.median(f20):.2f} Hz, 5th–95th percentiles {np.percentile(f20,5):.2f}–{np.percentile(f20,95):.2f} Hz; {100*in68.mean():.1f}% inside 6–8 Hz) versus rhythmic original BSG realizations (grey; median 0.50 Hz).
 
-**g**, Independent control of licking frequency versus amplitude (mean $\\pm$ s.d., $n = 10$ Licking networks at $D = 20$): selective gain modulation of the top/bottom 15% frequency-sensitive neurons smoothly steers licking frequency across the physiological 6–8 Hz range (from {data['sel_freq'][0].mean():.2f} $\\pm$ {data['sel_freq'][0].std():.2f} Hz at modulation index $-0.5$ to {data['sel_freq'][-1].mean():.2f} $\\pm$ {data['sel_freq'][-1].std():.2f} Hz at $+0.5$, red) at nearly constant amplitude, whereas uniform gain modulation across all neurons ($1.05\\text{{–}}1.50$) holds frequency invariant at {data['g_freq'].mean():.2f} Hz (dash-dotted grey) while scaling oscillation amplitude {data['g_sd'][-1].mean()/data['g_sd'][0].mean():.1f}-fold ({data['g_sd'][0].mean():.1f} to {data['g_sd'][-1].mean():.1f} Hz). Because the model runs natively at $\\mathrm{{d}}t = 1$ ms with preserved threshold $D_{{\\mathrm{{th}}}} \\approx {np.median(d_th):.0f}$, it remains drop-in compatible with `BSG-opto` (10% E-cell photostimulation at $I_{{\\max}} = 40$ yields {data['opto_d0'].mean():.2f} $\\pm$ {data['opto_d0'].std():.2f} Hz at $D = 0$ vs. {data['opto_d12'].mean():.2f} $\\pm$ {data['opto_d12'].std():.2f} Hz at $D = 12$).
+**g**, Independent control of licking frequency versus amplitude (mean $\\pm$ s.d., $n = 10$ Licking networks at $D = 20$): selective gain modulation of the top/bottom 15% frequency-sensitive neurons smoothly steers licking frequency across the physiological 6–8 Hz range (from {data['sel_freq'][0].mean():.2f} $\\pm$ {data['sel_freq'][0].std():.2f} Hz at modulation index $-0.5$ to {data['sel_freq'][-1].mean():.2f} $\\pm$ {data['sel_freq'][-1].std():.2f} Hz at $+0.5$, red) at nearly constant amplitude, whereas uniform gain modulation across all neurons ($1.05\\text{{–}}1.50$) holds frequency invariant at {data['g_freq'].mean():.2f} Hz (dash-dotted grey) while scaling oscillation amplitude {data['g_sd'][-1].mean()/data['g_sd'][0].mean():.1f}-fold ({data['g_sd'][0].mean():.1f} to {data['g_sd'][-1].mean():.1f} sp/s). Because the model runs natively at $\\mathrm{{d}}t = 1$ ms with preserved threshold $D_{{\\mathrm{{th}}}} \\approx {np.median(d_th):.0f}$, it remains drop-in compatible with `BSG-opto` (10% E-cell photostimulation at $I_{{\\max}} = 40$ yields {data['opto_d0'].mean():.2f} $\\pm$ {data['opto_d0'].std():.2f} sp/s at $D = 0$ vs. {data['opto_d12'].mean():.2f} $\\pm$ {data['opto_d12'].std():.2f} sp/s at $D = 12$).
 """
     with open(os.path.join(out_dir, 'Licking_BSG_model_caption.md'), 'w') as fh:
         fh.write(md_caption)

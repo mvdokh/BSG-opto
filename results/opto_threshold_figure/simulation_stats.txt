@@ -1,16 +1,16 @@
 === BSG-opto Threshold & Shuffle-Variability Quantitative Summary ===
 Examples (draw s=19):
-  D=0  no laser : on=0.15 Hz, Re(lam)=0.357
-  D=0  I_max=80 : pre=0.13, on=0.21, post=0.15 Hz, Re(lam)=0.528
-  D=12 no laser : on=0.67 Hz, Re(lam)=0.943
-  D=12 I_max=80 : pre=0.52, on=5.35, post=1.14 Hz, Re(lam)=1.049
-  D=12 I_max=40 : pre=0.54, on=5.21, post=0.98 Hz, Re(lam)=1.062
-  D=20 reference: on=8.60 Hz, Re(lam)=1.124
+  D=0  no laser : on=0.15 sp/s, Re(lam)=0.357
+  D=0  I_max=80 : pre=0.13, on=0.21, post=0.15 sp/s, Re(lam)=0.528
+  D=12 no laser : on=0.67 sp/s, Re(lam)=0.943
+  D=12 I_max=80 : pre=0.52, on=5.35, post=1.14 sp/s, Re(lam)=1.049
+  D=12 I_max=40 : pre=0.54, on=5.21, post=0.98 sp/s, Re(lam)=1.062
+  D=20 reference: on=8.60 sp/s, Re(lam)=1.124
 
 Panel e (Rest D=0, 6 intensities x 6 desensitization regimes, n=30 draws):
-  SD range across all 36 tiles: 0.15 to 0.43 Hz
+  SD range across all 36 tiles: 0.15 to 0.43 sp/s
   Re(lam) range across all 36 tiles: 0.363 to 0.791
-  10% mixed E+I (20/200 cells) at D=0, I=80: ss=0.3 -> 0.20+/-0.05 Hz; ss=1.0 -> 0.24+/-0.07 Hz
+  10% mixed E+I (20/200 cells) at D=0, I=80: ss=0.3 -> 0.20+/-0.05 sp/s; ss=1.0 -> 0.24+/-0.07 sp/s
 
 Panels h & i key points (n=30 draws, I_max=40):
   D= 0: ctrl=0.15+/-0.00 (lam=0.36) | var40=0.17+/-0.00 (lam=0.44, succ=0%) | uni40=0.20+/-0.01 | step40=0.41+/-0.10
@@ -23,18 +23,18 @@ Panels h & i key points (n=30 draws, I_max=40):
   D=20: ctrl=8.69+/-0.27 (lam=1.11) | var40=8.26+/-1.68 (lam=1.09, succ=0%) | uni40=6.86+/-2.32 | step40=1.28+/-0.78
 
 Multi-network check (10 independent connectivity seeds, 15 draws each, I_max=40 var_des):
-  D=0  no laser: 0.15 +/- 0.00 Hz
-  D=0  10% E   : 0.17 +/- 0.00 Hz (max network mean 0.18 Hz)
-  D=12 no laser: 0.89 +/- 0.26 Hz
-  D=12 10% E   : 1.92 +/- 0.48 Hz (max network mean 2.88 Hz)
-  D=20 no laser: 7.27 +/- 3.02 Hz
+  D=0  no laser: 0.15 +/- 0.00 sp/s
+  D=0  10% E   : 0.17 +/- 0.00 sp/s (max network mean 0.18 sp/s)
+  D=12 no laser: 0.89 +/- 0.26 sp/s
+  D=12 10% E   : 1.92 +/- 0.48 sp/s (max network mean 2.88 sp/s)
+  D=20 no laser: 7.27 +/- 3.02 sp/s
 
 Panels k-m (500 random shuffles of 10 E cells):
-  D=0  var. I=40 : 0.17+/-0.01 Hz (range 0.16-0.20, >=2Hz: 0/500, max Re lam=0.684)
-  D=0  uni. I=80 : 0.34+/-0.15 Hz (med 0.31, >=2Hz: 1/500)
-  D=12 var. I=40 : 2.06+/-1.51 Hz (range 0.49-8.41, med 1.42, >=2Hz: 181/500=36.2%)
-  D=12 uni. I=40 : 2.27+/-1.78 Hz (range 0.49-9.55, med 1.49, >=2Hz: 202/500=40.4%)
-  Variance decomposition (20 subsets x 25 noise seeds, D=12 uni I=40): between-subset=99.4%, within-subset noise=0.6% (mean within-subset SD=0.17 Hz, subset means 0.98-10.05 Hz)
+  D=0  var. I=40 : 0.17+/-0.01 sp/s (range 0.16-0.20, >=2 sp/s: 0/500, max Re lam=0.684)
+  D=0  uni. I=80 : 0.34+/-0.15 sp/s (med 0.31, >=2 sp/s: 1/500)
+  D=12 var. I=40 : 2.06+/-1.51 sp/s (range 0.49-8.41, med 1.42, >=2 sp/s: 181/500=36.2%)
+  D=12 uni. I=40 : 2.27+/-1.78 sp/s (range 0.49-9.55, med 1.49, >=2 sp/s: 202/500=40.4%)
+  Variance decomposition (20 subsets x 25 noise seeds, D=12 uni I=40): between-subset=99.4%, within-subset noise=0.6% (mean within-subset SD=0.17 sp/s, subset means 0.98-10.05 sp/s)
   Per-E-cell multi-synaptic impact g_eff: mean=0.0227, std=0.0452, range=[-0.0695, 0.1262]
   Predictors of D=12 var. I=40 (n=500):
     Linear-resp Re(lam)_pred      : r=+0.765, R2=0.585, rho=+0.842
@@ -44,4 +44,4 @@ Panels k-m (500 random shuffles of 10 E cells):
     Eigenmode amplitude |v_i|     : r=-0.005, R2=0.000, rho=-0.003
     Oscillatory phase coherence R : r=+0.022, R2=0.000, rho=+0.009
   Uniform D=12 I=40 Linear-resp Re(lam)_pred: r=+0.731, R2=0.535, rho=+0.795
-  Causal top-10 vs bottom-10 g_eff (I=40): D=0 top=0.43 Hz (lam=0.881), bot=0.18 Hz; D=12 top=3.76 Hz (lam=1.015), bot=0.39 Hz (lam=0.748)
+  Causal top-10 vs bottom-10 g_eff (I=40): D=0 top=0.43 sp/s (lam=0.881), bot=0.18 sp/s; D=12 top=3.76 sp/s (lam=1.015), bot=0.39 sp/s (lam=0.748)

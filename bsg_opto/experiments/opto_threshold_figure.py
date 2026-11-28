@@ -662,7 +662,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
 
         sd_val = float(data['ex_osc_on'][k])
         lam_val = float(data['ex_lam_max'][k].real)
-        badge_txt = f'SD = {sd_val:.2f} Hz | Re $\\lambda$ = {lam_val:.2f}'
+        badge_txt = f'SD = {sd_val:.2f} sp/s | Re $\\lambda$ = {lam_val:.2f}'
         axr.text(0.96, 0.05, badge_txt, transform=axr.transAxes, ha='right', va='bottom',
                  fontsize=5.0, color='white',
                  bbox=dict(boxstyle='round,pad=0.17', fc='#000000', alpha=0.56, lw=0))
@@ -684,7 +684,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
             axn.set_yticklabels([])
 
     cb_r = fig.colorbar(im_raster, cax=ax_rcbar)
-    cb_r.set_label('Firing rate (Hz)', fontsize=6.2, labelpad=2.8)
+    cb_r.set_label('Firing rate (sp/s)', fontsize=6.2, labelpad=2.8)
     cb_r.set_ticks([0, 25, 50])
     cb_r.ax.tick_params(labelsize=5.6, length=2, width=0.5)
     cb_r.outline.set_linewidth(0.5)
@@ -713,7 +713,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
         for c in range(e_mean.shape[1]):
             ax_e.text(c, r, f'{e_mean[r, c]:.2f}', ha='center', va='center',
                       fontsize=4.9, color='#F2E9FA')
-    ax_e.text(0.50, -0.235, f'All regimes: SD $\\leq$ {e_mean.max():.2f} Hz, max Re $\\lambda$ = {e_lam_max_all:.2f} < 1',
+    ax_e.text(0.50, -0.235, f'All regimes: SD $\\leq$ {e_mean.max():.2f} sp/s, max Re $\\lambda$ = {e_lam_max_all:.2f} < 1',
               transform=ax_e.transAxes, ha='center', va='top', fontsize=5.0, color='#444444', style='italic')
 
     drives = data['drives']
@@ -744,7 +744,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
             axh.set_ylabel('Background tonic drive $D$', labelpad=2.2)
             axh.text(7.35, 14.0, '$D_{\\mathrm{th}}$', color='#80DEEA', fontsize=5.6,
                      ha='right', va='bottom', fontweight='bold')
-            axh.text(4.1, 9.5, 'SD = 2 Hz', color='white', fontsize=5.0, ha='center', va='center')
+            axh.text(4.1, 9.5, 'SD = 2 sp/s', color='white', fontsize=5.0, ha='center', va='center')
         else:
             axh.set_yticklabels([])
             axh.text(7.35, 14.0, '$D_{\\mathrm{th}}$', color='#80DEEA', fontsize=5.6,
@@ -753,7 +753,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
                      ha='center', va='center', style='italic')
 
     cb_h = fig.colorbar(im_e, cax=ax_hcbar)
-    cb_h.set_label('Unlit rhythmicity (SD, Hz)', fontsize=6.2, labelpad=2.8)
+    cb_h.set_label('Unlit amplitude (rate SD, sp/s)', fontsize=6.2, labelpad=2.8)
     cb_h.set_ticks([0.2, 1, 2, 4, 6, 8.7])
     cb_h.set_ticklabels(['0.2', '1', '2', '4', '6', '8.7'])
     cb_h.ax.tick_params(labelsize=5.5, length=2, width=0.5)
@@ -783,7 +783,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
     ax_h.set_xlim(0, 20.4); ax_h.set_ylim(-0.2, 9.8)
     ax_h.set_xticks([0, 5, 10, 15, 20]); ax_h.set_yticks([0, 2, 4, 6, 8])
     ax_h.set_xlabel('Background tonic drive $D$', labelpad=2.2)
-    ax_h.set_ylabel('Unlit rhythmicity (SD, Hz)', labelpad=2.2)
+    ax_h.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
     ax_h.set_title('Near-threshold gating of rhythmicity', fontsize=6.3, pad=4.5)
     ax_h.text(11.75, 9.25, 'Near\nthresh.', ha='center', va='top', fontsize=5.1, color='#9E2A2B')
     ax_h.text(13.85, -0.05, '$D_{\\mathrm{th}}$', ha='left', va='bottom', fontsize=5.1, color='#555555')
@@ -872,8 +872,8 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
     ax_k.set_xticks(range(len(shuf_groups)))
     ax_k.set_xticklabels([g[2] for g in shuf_groups], fontsize=5.3)
     ax_k.set_yticks([0, 2, 4, 6, 8, 10])
-    ax_k.set_ylabel('Unlit rhythmicity (SD, Hz)', labelpad=2.2)
-    ax_k.set_title('500 random 10-cell shuffles (% $\\geq$ 2 Hz)', fontsize=6.1, pad=4.5)
+    ax_k.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
+    ax_k.set_title('500 random 10-cell shuffles (% $\\geq$ 2 sp/s)', fontsize=6.0, pad=4.5)
 
     # Clean variance-decomposition callout inside empty mid-left space of panel k
     vd = shuf['vd_mat']
@@ -910,7 +910,7 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
     ax_l.set_xticks([0.8, 0.9, 1.0, 1.1])
     ax_l.set_yticks([0, 2, 4, 6, 8])
     ax_l.set_xlabel('Predicted Re $\\lambda_{\\max}^{\\mathrm{pred}}$ (from $W$ alone)', labelpad=2.2)
-    ax_l.set_ylabel('Simulated rhythmicity (SD, Hz)', labelpad=2.2)
+    ax_l.set_ylabel('Simulated amplitude (rate SD, sp/s)', labelpad=2.2)
     ax_l.set_title('Linear-response prediction ($D = 12$, $n = 500$)', fontsize=6.1, pad=4.5)
     ax_l.text(0.04, 0.94, f'Spearman $\\rho = {rho_l:.2f}$\nPearson $r = {r_l:.2f}$',
               transform=ax_l.transAxes, ha='left', va='top', fontsize=5.0, fontweight='bold',
@@ -1001,18 +1001,18 @@ def print_summary_stats(data: dict, shuf: dict, out_dir: str):
     lines = [
         '=== BSG-opto Threshold & Shuffle-Variability Quantitative Summary ===',
         'Examples (draw s=19):',
-        f'  D=0  no laser : on={data["ex_osc_on"][0]:.2f} Hz, Re(lam)={data["ex_lam_max"][0].real:.3f}',
-        f'  D=0  I_max=80 : pre={data["ex_osc_pre"][1]:.2f}, on={data["ex_osc_on"][1]:.2f}, post={data["ex_osc_post"][1]:.2f} Hz, Re(lam)={data["ex_lam_max"][1].real:.3f}',
-        f'  D=12 no laser : on={data["ex_osc_on"][2]:.2f} Hz, Re(lam)={data["ex_lam_max"][2].real:.3f}',
-        f'  D=12 I_max=80 : pre={data["ex_osc_pre"][3]:.2f}, on={data["ex_osc_on"][3]:.2f}, post={data["ex_osc_post"][3]:.2f} Hz, Re(lam)={data["ex_lam_max"][3].real:.3f}',
-        f'  D=12 I_max=40 : pre={data["ex_osc_pre"][4]:.2f}, on={data["ex_osc_on"][4]:.2f}, post={data["ex_osc_post"][4]:.2f} Hz, Re(lam)={data["ex_lam_max"][4].real:.3f}',
-        f'  D=20 reference: on={data["ex_osc_on"][5]:.2f} Hz, Re(lam)={data["ex_lam_max"][5].real:.3f}',
+        f'  D=0  no laser : on={data["ex_osc_on"][0]:.2f} sp/s, Re(lam)={data["ex_lam_max"][0].real:.3f}',
+        f'  D=0  I_max=80 : pre={data["ex_osc_pre"][1]:.2f}, on={data["ex_osc_on"][1]:.2f}, post={data["ex_osc_post"][1]:.2f} sp/s, Re(lam)={data["ex_lam_max"][1].real:.3f}',
+        f'  D=12 no laser : on={data["ex_osc_on"][2]:.2f} sp/s, Re(lam)={data["ex_lam_max"][2].real:.3f}',
+        f'  D=12 I_max=80 : pre={data["ex_osc_pre"][3]:.2f}, on={data["ex_osc_on"][3]:.2f}, post={data["ex_osc_post"][3]:.2f} sp/s, Re(lam)={data["ex_lam_max"][3].real:.3f}',
+        f'  D=12 I_max=40 : pre={data["ex_osc_pre"][4]:.2f}, on={data["ex_osc_on"][4]:.2f}, post={data["ex_osc_post"][4]:.2f} sp/s, Re(lam)={data["ex_lam_max"][4].real:.3f}',
+        f'  D=20 reference: on={data["ex_osc_on"][5]:.2f} sp/s, Re(lam)={data["ex_lam_max"][5].real:.3f}',
         '',
         'Panel e (Rest D=0, 6 intensities x 6 desensitization regimes, n=30 draws):',
-        f'  SD range across all 36 tiles: {e_mean.min():.2f} to {e_mean.max():.2f} Hz',
+        f'  SD range across all 36 tiles: {e_mean.min():.2f} to {e_mean.max():.2f} sp/s',
         f'  Re(lam) range across all 36 tiles: {e_lam_mean.min():.3f} to {e_lam_mean.max():.3f}',
-        f'  10% mixed E+I (20/200 cells) at D=0, I=80: ss=0.3 -> {data["mixed_osc_03"].mean():.2f}+/-{data["mixed_osc_03"].std():.2f} Hz; '
-        f'ss=1.0 -> {data["mixed_osc_10"].mean():.2f}+/-{data["mixed_osc_10"].std():.2f} Hz',
+        f'  10% mixed E+I (20/200 cells) at D=0, I=80: ss=0.3 -> {data["mixed_osc_03"].mean():.2f}+/-{data["mixed_osc_03"].std():.2f} sp/s; '
+        f'ss=1.0 -> {data["mixed_osc_10"].mean():.2f}+/-{data["mixed_osc_10"].std():.2f} sp/s',
         '',
         'Panels h & i key points (n=30 draws, I_max=40):',
     ]
@@ -1031,25 +1031,25 @@ def print_summary_stats(data: dict, shuf: dict, out_dir: str):
     lines += [
         '',
         'Multi-network check (10 independent connectivity seeds, 15 draws each, I_max=40 var_des):',
-        f'  D=0  no laser: {mn[:,0].mean():.2f} +/- {mn[:,0].std():.2f} Hz',
-        f'  D=0  10% E   : {mn[:,1].mean():.2f} +/- {mn[:,1].std():.2f} Hz (max network mean {mn[:,1].max():.2f} Hz)',
-        f'  D=12 no laser: {mn[:,2].mean():.2f} +/- {mn[:,2].std():.2f} Hz',
-        f'  D=12 10% E   : {mn[:,3].mean():.2f} +/- {mn[:,3].std():.2f} Hz (max network mean {mn[:,3].max():.2f} Hz)',
-        f'  D=20 no laser: {mn[:,4].mean():.2f} +/- {mn[:,4].std():.2f} Hz',
+        f'  D=0  no laser: {mn[:,0].mean():.2f} +/- {mn[:,0].std():.2f} sp/s',
+        f'  D=0  10% E   : {mn[:,1].mean():.2f} +/- {mn[:,1].std():.2f} sp/s (max network mean {mn[:,1].max():.2f} sp/s)',
+        f'  D=12 no laser: {mn[:,2].mean():.2f} +/- {mn[:,2].std():.2f} sp/s',
+        f'  D=12 10% E   : {mn[:,3].mean():.2f} +/- {mn[:,3].std():.2f} sp/s (max network mean {mn[:,3].max():.2f} sp/s)',
+        f'  D=20 no laser: {mn[:,4].mean():.2f} +/- {mn[:,4].std():.2f} sp/s',
         '',
         'Panels k-m (500 random shuffles of 10 E cells):',
-        f'  D=0  var. I=40 : {shuf["osc_d0_var40"].mean():.2f}+/-{shuf["osc_d0_var40"].std():.2f} Hz '
-        f'(range {shuf["osc_d0_var40"].min():.2f}-{shuf["osc_d0_var40"].max():.2f}, >=2Hz: {(shuf["osc_d0_var40"]>=2).sum()}/500, '
+        f'  D=0  var. I=40 : {shuf["osc_d0_var40"].mean():.2f}+/-{shuf["osc_d0_var40"].std():.2f} sp/s '
+        f'(range {shuf["osc_d0_var40"].min():.2f}-{shuf["osc_d0_var40"].max():.2f}, >=2 sp/s: {(shuf["osc_d0_var40"]>=2).sum()}/500, '
         f'max Re lam={shuf["lam_d0_var40"].max():.3f})',
-        f'  D=0  uni. I=80 : {shuf["osc_d0_uni80"].mean():.2f}+/-{shuf["osc_d0_uni80"].std():.2f} Hz '
-        f'(med {np.median(shuf["osc_d0_uni80"]):.2f}, >=2Hz: {(shuf["osc_d0_uni80"]>=2).sum()}/500)',
-        f'  D=12 var. I=40 : {y_var.mean():.2f}+/-{y_var.std():.2f} Hz '
-        f'(range {y_var.min():.2f}-{y_var.max():.2f}, med {np.median(y_var):.2f}, >=2Hz: {(y_var>=2).sum()}/500={100*(y_var>=2).mean():.1f}%)',
-        f'  D=12 uni. I=40 : {y_uni.mean():.2f}+/-{y_uni.std():.2f} Hz '
-        f'(range {y_uni.min():.2f}-{y_uni.max():.2f}, med {np.median(y_uni):.2f}, >=2Hz: {(y_uni>=2).sum()}/500={100*(y_uni>=2).mean():.1f}%)',
+        f'  D=0  uni. I=80 : {shuf["osc_d0_uni80"].mean():.2f}+/-{shuf["osc_d0_uni80"].std():.2f} sp/s '
+        f'(med {np.median(shuf["osc_d0_uni80"]):.2f}, >=2 sp/s: {(shuf["osc_d0_uni80"]>=2).sum()}/500)',
+        f'  D=12 var. I=40 : {y_var.mean():.2f}+/-{y_var.std():.2f} sp/s '
+        f'(range {y_var.min():.2f}-{y_var.max():.2f}, med {np.median(y_var):.2f}, >=2 sp/s: {(y_var>=2).sum()}/500={100*(y_var>=2).mean():.1f}%)',
+        f'  D=12 uni. I=40 : {y_uni.mean():.2f}+/-{y_uni.std():.2f} sp/s '
+        f'(range {y_uni.min():.2f}-{y_uni.max():.2f}, med {np.median(y_uni):.2f}, >=2 sp/s: {(y_uni>=2).sum()}/500={100*(y_uni>=2).mean():.1f}%)',
         f'  Variance decomposition (20 subsets x 25 noise seeds, D=12 uni I=40): '
         f'between-subset={100*var_bet/var_tot:.1f}%, within-subset noise={100*var_wit/var_tot:.1f}% '
-        f'(mean within-subset SD={vd.std(1).mean():.2f} Hz, subset means {vd.mean(1).min():.2f}-{vd.mean(1).max():.2f} Hz)',
+        f'(mean within-subset SD={vd.std(1).mean():.2f} sp/s, subset means {vd.mean(1).min():.2f}-{vd.mean(1).max():.2f} sp/s)',
         f'  Per-E-cell multi-synaptic impact g_eff: mean={shuf["g_eff_E"].mean():.4f}, std={shuf["g_eff_E"].std():.4f}, '
         f'range=[{shuf["g_eff_E"].min():.4f}, {shuf["g_eff_E"].max():.4f}]',
         '  Predictors of D=12 var. I=40 (n=500):',
@@ -1070,8 +1070,8 @@ def print_summary_stats(data: dict, shuf: dict, out_dir: str):
     lines += [
         f'  Uniform D=12 I=40 Linear-resp Re(lam)_pred: r={rp_u:+.3f}, R2={rp_u**2:.3f}, rho={rs_u:+.3f}',
         f'  Causal top-10 vs bottom-10 g_eff (I=40): '
-        f'D=0 top={shuf["causal_osc"][0]:.2f} Hz (lam={shuf["causal_lam"][0]:.3f}), bot={shuf["causal_osc"][1]:.2f} Hz; '
-        f'D=12 top={shuf["causal_osc"][2]:.2f} Hz (lam={shuf["causal_lam"][2]:.3f}), bot={shuf["causal_osc"][3]:.2f} Hz (lam={shuf["causal_lam"][3]:.3f})',
+        f'D=0 top={shuf["causal_osc"][0]:.2f} sp/s (lam={shuf["causal_lam"][0]:.3f}), bot={shuf["causal_osc"][1]:.2f} sp/s; '
+        f'D=12 top={shuf["causal_osc"][2]:.2f} sp/s (lam={shuf["causal_lam"][2]:.3f}), bot={shuf["causal_osc"][3]:.2f} sp/s (lam={shuf["causal_lam"][3]:.3f})',
     ]
     txt = '\n'.join(lines)
     print(txt, flush=True)

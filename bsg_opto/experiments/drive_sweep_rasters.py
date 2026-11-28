@@ -96,8 +96,8 @@ def run(out_dir: str = DEFAULT_OUT, i_max: float = 80.0, draw: int = 19, **_):
 
     print(f'[sim] 42 trials x 10 s completed in {time.time()-t0:.1f}s', flush=True)
     for i, D in enumerate(drives):
-        print(f'  D={D:2d} | no-laser: SD={sd_ctrl[i]:4.2f} Hz, Re(lam)={lam_ctrl[i]:.2f} | '
-              f'+laser: SD={sd_opto[i]:4.2f} Hz, Re(lam)={lam_opto[i]:.2f}')
+        print(f'  D={D:2d} | no-laser: SD={sd_ctrl[i]:4.2f} sp/s, Re(lam)={lam_ctrl[i]:.2f} | '
+              f'+laser: SD={sd_opto[i]:4.2f} sp/s, Re(lam)={lam_opto[i]:.2f}')
 
     # Precompute antagonist nerve readouts on a single shared vertical scale across all 42 panels
     nerves_ctrl = [nerve_readout(net, R_ctrl[i], mode='limb', seed=0) for i in range(21)]
@@ -230,7 +230,7 @@ def run(out_dir: str = DEFAULT_OUT, i_max: float = 80.0, draw: int = 19, **_):
         # Dedicated vertical colorbar on the right edge of each block (aligned to block height)
         ax_cb = fig.add_axes([0.950, y_bot + 0.06, 0.010, (y_top - y_bot) - 0.12])
         cb = fig.colorbar(im_ref, cax=ax_cb)
-        cb.set_label('Firing rate (Hz)', fontsize=6.8, labelpad=3.0)
+        cb.set_label('Firing rate (sp/s)', fontsize=6.8, labelpad=3.0)
         cb.set_ticks([0, 25, 50])
         cb.ax.tick_params(labelsize=6.0, length=2.2, width=0.55)
         cb.outline.set_linewidth(0.5)
