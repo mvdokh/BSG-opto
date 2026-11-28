@@ -118,7 +118,7 @@ def run(pct: float = 15.0, i_max: float = 80.0, no_desens: bool = False,
     cols[np.isin(order, rand_idx)] = C_R; cols[np.isin(order, hi_idx)] = C_H
     ax.bar(np.arange(net.N_exc), contrib_sd[order], color=list(cols), width=1)
     ax.set_xlabel('E cells, ranked by contribution to the reference rhythm')
-    ax.set_ylabel('Rhythmic modulation\nduring reference (SD, Hz)')
+    ax.set_ylabel('Rhythmic modulation\nduring reference (rate SD, sp/s)')
     ax.set_title('Who carries the reference rhythm?', fontsize=10)
     ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, color=C_H), plt.Rectangle((0, 0), 1, 1, color=C_R)],
               labels=[f'high-drive {pct_str} (top {n_stim})', f'random {pct_str} (example)'], fontsize=8, frameon=False)
@@ -156,7 +156,7 @@ def run(pct: float = 15.0, i_max: float = 80.0, no_desens: bool = False,
         p.set_facecolor(c); p.set_alpha(0.6)
     ax.axhline(m_ref['osc_sd'], c='k', ls=':', label='reference rhythm')
     ax.axhline(m_rest['osc_sd'], c='.6', ls='--', label='no light')
-    ax.set_ylabel('Rhythmicity of unlit cells\n(temporal SD, Hz)'); ax.set_ylim(0, 10)
+    ax.set_ylabel('Unlit amplitude\n(temporal rate SD, sp/s)'); ax.set_ylim(0, 10)
     ax.set_title(f'{pct_str} E ({n_stim} cells)\n({n_rand} random draws; {n_noise} noise seeds)', fontsize=9)
     ax.legend(fontsize=7, frameon=False, loc='upper left')
 

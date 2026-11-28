@@ -114,7 +114,7 @@ def run(pct: float = 5.0, i_max: float = 80.0, n_draws: int = 20,
     ax.plot(P, res['rewire']['osc_nolight'].mean(1), c='.6', ls='--', marker='.', label='no light')
     o = res['rewire']['osc_ref']
     ax.errorbar(P, o.mean(1), o.std(1), c='k', ls=':', marker='s', ms=3, capsize=2, label='global drive (same network)')
-    ax.set_xlabel('p_EI: opsin E → I connection probability'); ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    ax.set_xlabel('p_EI: opsin E → I connection probability'); ax.set_ylabel('Unlit amplitude (rate SD, sp/s)')
     ax.set_title(f'{n_draws} random {pct_str} opsin draws per point', fontsize=9)
     ax.set_yscale('log'); ax.legend(fontsize=7, frameon=False)
 

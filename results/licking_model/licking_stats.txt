@@ -10,13 +10,13 @@ Seed 1 leading eigval: 0.961 +/- 0.832i
   Median onset D_th  : 13.0 (IQR 13.0-13.0)
 
 Parameter ablation (30 seeds each, D = 20):
-  Original BSG (N=200, C=0.1, τ=50 ms)          | rhy= 86.7% | med SD= 6.64 sp/s | med f=0.25 (0.25-0.50) Hz
-  More neurons only (N=500, τ=50 ms)            | rhy= 96.7% | med SD= 7.91 sp/s | med f=0.25 (0.25-0.50) Hz
-  Denser conn. only (C=0.25, τ=50 ms)           | rhy= 90.0% | med SD= 6.76 sp/s | med f=0.50 (0.25-0.75) Hz
-  Higher gain only (gain=2.0, τ=50 ms)          | rhy=100.0% | med SD=19.10 sp/s | med f=0.25 (0.25-0.75) Hz
-  Faster τ_V only (τ=18 ms, random W)           | rhy= 70.0% | med SD= 7.79 sp/s | med f=1.00 (0.75-1.75) Hz
-  Rotational W only (α=0.68, ψ=40°, τ=50 ms)    | rhy=100.0% | med SD=14.22 sp/s | med f=2.75 (2.50-2.75) Hz
-  Licking BSG (N=300, C=0.15, rot. W, τ=18 ms)  | rhy=100.0% | med SD=15.34 sp/s | med f=7.25 (7.00-7.50) Hz
+  Original BSG (N=200, C=0.1, τ=50 ms)          | rhy=26/30 ( 86.7%) | med SD= 6.64 sp/s | mean f=0.40+/-0.25 Hz
+  More neurons only (N=500, τ=50 ms)            | rhy=29/30 ( 96.7%) | med SD= 7.91 sp/s | mean f=0.39+/-0.18 Hz
+  Denser conn. only (C=0.25, τ=50 ms)           | rhy=27/30 ( 90.0%) | med SD= 6.76 sp/s | mean f=0.54+/-0.25 Hz
+  Higher gain only (gain=2.0, τ=50 ms)          | rhy=30/30 (100.0%) | med SD=19.10 sp/s | mean f=0.51+/-0.36 Hz
+  Faster τ_V only (τ=18 ms, random W)           | rhy=21/30 ( 70.0%) | med SD= 7.79 sp/s | mean f=1.30+/-0.78 Hz
+  Rotational W only (α=0.68, ψ=40°, τ=50 ms)    | rhy=30/30 (100.0%) | med SD=14.22 sp/s | mean f=2.67+/-0.13 Hz
+  Licking BSG (N=300, C=0.15, rot. W, τ=18 ms)  | rhy=30/30 (100.0%) | med SD=15.34 sp/s | mean f=7.28+/-0.31 Hz
 
 Uniform gain modulation (n = 20 networks, D = 20):
   g=1.05: f=7.29 Hz, SD=8.9 sp/s; g=1.10: f=7.28 Hz, SD=11.7 sp/s; g=1.15: f=7.28 Hz, SD=13.6 sp/s; g=1.20: f=7.28 Hz, SD=15.3 sp/s; g=1.25: f=7.29 Hz, SD=16.7 sp/s; g=1.30: f=7.28 Hz, SD=17.9 sp/s; g=1.35: f=7.28 Hz, SD=19.0 sp/s; g=1.40: f=7.29 Hz, SD=20.0 sp/s; g=1.45: f=7.29 Hz, SD=20.8 sp/s; g=1.50: f=7.29 Hz, SD=21.6 sp/s

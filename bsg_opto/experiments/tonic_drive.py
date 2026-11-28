@@ -116,7 +116,7 @@ def run(pct: float = 5.0, d_min: int = 1, d_max: int = 15, i_max: float = 80.0,
     ax.axvspan(drives[0] - 0.5, drives[-1] + 0.5, color='#4fa3ff', alpha=0.1, lw=0)
     ax.axvline(20, c='k', ls=':', lw=0.8)
     ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)')
-    ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    ax.set_ylabel('Unlit amplitude (rate SD, sp/s)')
     ax.set_title(f'Rhythm vs tonic drive ({n_draws} opsin draws)', fontsize=10)
     ax.legend(fontsize=7, frameon=False, loc='upper left')
 

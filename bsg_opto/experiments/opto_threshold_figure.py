@@ -555,23 +555,22 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
         ax_nerves.append(fig.add_axes([x0, 0.754, r1_w, 0.055]))
     ax_rcbar = fig.add_axes([0.916, 0.818, 0.011, 0.136])
 
-    # Row 2 (y in [0.536, 0.692]): 3 phase-space heatmaps (e, f, g) + shared colorbar
-    ax_e = fig.add_axes([0.102, 0.536, 0.212, 0.154])
-    ax_f = fig.add_axes([0.388, 0.536, 0.236, 0.154])
-    ax_g = fig.add_axes([0.656, 0.536, 0.236, 0.154])
-    ax_hcbar = fig.add_axes([0.908, 0.536, 0.012, 0.154])
+    # Row 2 (y in [0.536, 0.692]): 2 spacious phase-space heatmaps (e, f) + shared colorbar
+    ax_e = fig.add_axes([0.105, 0.536, 0.345, 0.154])
+    ax_f = fig.add_axes([0.535, 0.536, 0.355, 0.154])
+    ax_hcbar = fig.add_axes([0.906, 0.536, 0.012, 0.154])
 
-    # Row 3 (y in [0.278, 0.432]): drive curves (h), Hopf boundary (i), Jacobian spectrum (j)
-    # Shared 2x2 legend floats cleanly in the open band y in [0.448, 0.484]
-    ax_h = fig.add_axes([0.076, 0.278, 0.246, 0.154])
-    ax_i = fig.add_axes([0.402, 0.278, 0.246, 0.154])
-    ax_j = fig.add_axes([0.728, 0.278, 0.222, 0.154])
+    # Row 3 (y in [0.278, 0.432]): drive curves (g), Hopf boundary (h), Jacobian spectrum (i)
+    # Shared 1x2 legend floats cleanly in the open band y in [0.452, 0.478]
+    ax_g = fig.add_axes([0.076, 0.278, 0.246, 0.154])
+    ax_h = fig.add_axes([0.402, 0.278, 0.246, 0.154])
+    ax_i = fig.add_axes([0.728, 0.278, 0.222, 0.154])
 
-    # Row 4 (y in [0.050, 0.202]): 500-shuffle distributions (k), linear-response scatter (l), predictor bar chart (m)
-    ax_k = fig.add_axes([0.076, 0.050, 0.226, 0.152])
-    ax_l = fig.add_axes([0.370, 0.050, 0.214, 0.152])
-    ax_lcbar = fig.add_axes([0.592, 0.050, 0.010, 0.152])
-    ax_m = fig.add_axes([0.812, 0.050, 0.158, 0.152])
+    # Row 4 (y in [0.050, 0.202]): 500-shuffle distributions (j), linear-response scatter (k), predictor bar chart (l)
+    ax_j = fig.add_axes([0.076, 0.050, 0.226, 0.152])
+    ax_k = fig.add_axes([0.370, 0.050, 0.214, 0.152])
+    ax_kcbar = fig.add_axes([0.592, 0.050, 0.010, 0.152])
+    ax_l = fig.add_axes([0.812, 0.050, 0.158, 0.152])
 
     # =========================================================================
     # Panel a: Network schematic & normalized ChR2 photocurrent kinetics
@@ -662,10 +661,24 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
 
         sd_val = float(data['ex_osc_on'][k])
         lam_val = float(data['ex_lam_max'][k].real)
-        badge_txt = f'SD = {sd_val:.2f} sp/s | Re $\\lambda$ = {lam_val:.2f}'
+        # Peak temporal frequency (8x zero-padded Hanning FFT over unlit cells during 2-6 s)
+        unlit_mask = np.ones(net.N, dtype=bool)
+        unlit_mask[op_ex] = False
+        seg = R[unlit_mask, proto.analysis_win[0]:proto.analysis_win[1]]
+        if sd_val >= 2.0:
+            n_seg = seg.shape[1]
+            win = np.hanning(n_seg)[None, :]
+            nfft = n_seg * 8
+            fr = np.fft.rfftfreq(nfft, d=1e-3)
+            bm = (fr >= 0.10) & (fr <= 10.0)
+            psd = np.mean(np.abs(np.fft.rfft((seg - seg.mean(1, keepdims=True)) * win, n=nfft, axis=1)[:, bm]) ** 2, axis=0)
+            f_txt = f'$f$ = {fr[bm][psd.argmax()]:.2f} Hz'
+        else:
+            f_txt = '$f$ = none'
+        badge_txt = f'SD = {sd_val:.2f} sp/s | Re $\\lambda$ = {lam_val:.2f}\n{f_txt}'
         axr.text(0.96, 0.05, badge_txt, transform=axr.transAxes, ha='right', va='bottom',
-                 fontsize=5.0, color='white',
-                 bbox=dict(boxstyle='round,pad=0.17', fc='#000000', alpha=0.56, lw=0))
+                 fontsize=4.85, linespacing=1.12, color='white',
+                 bbox=dict(boxstyle='round,pad=0.18', fc='#000000', alpha=0.58, lw=0))
 
         nr = nerves[idx_p]
         if lit:
@@ -720,37 +733,25 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
     amps_fg = data['amps_fg']
     ctrl_col = data['ctrl_osc'].mean(-1, keepdims=True)
     mat_f = np.hstack([ctrl_col, data['grid_var']])
-    mat_g = np.hstack([ctrl_col, data['grid_step']])
     x_labs_fg = ['Off'] + [f'{int(a)}' for a in amps_fg]
 
-    for idx_h, (axh, mat, ttl) in enumerate([
-        (ax_f, mat_f, 'Desensitizing ChR2 (var. light $\\varphi$)'),
-        (ax_g, mat_g, 'Non-desensitizing step ($I_{\\mathrm{ss}}/I_{\\mathrm{peak}} = 1$)'),
-    ]):
-        axh.imshow(mat, origin='lower', aspect='auto', cmap=h_cmap, norm=h_norm, interpolation='nearest')
-        axh.axvline(0.5, color='white', lw=1.1, alpha=0.95)
-        axh.axhline(13.5, color='#80DEEA', ls=':', lw=1.0, alpha=0.95)
-        X_c, Y_c = np.meshgrid(np.arange(1, mat.shape[1]), drives)
-        axh.contour(X_c, Y_c, mat[:, 1:], levels=[2.0], colors=['white'],
-                    linestyles=['--'], linewidths=[0.95])
-        axh.set_xticks(range(len(x_labs_fg)))
-        axh.set_xticklabels(x_labs_fg, fontsize=5.5)
-        axh.set_yticks([0, 4, 8, 12, 16, 20])
-        axh.set_xlabel('Peak photocurrent $I_{\\max}$', labelpad=2.2)
-        axh.set_title(ttl, fontsize=6.3, pad=5.0)
-        axh.spines['top'].set_visible(True); axh.spines['right'].set_visible(True)
-        axh.spines['top'].set_linewidth(0.55); axh.spines['right'].set_linewidth(0.55)
-        if idx_h == 0:
-            axh.set_ylabel('Background tonic drive $D$', labelpad=2.2)
-            axh.text(7.35, 14.0, '$D_{\\mathrm{th}}$', color='#80DEEA', fontsize=5.6,
-                     ha='right', va='bottom', fontweight='bold')
-            axh.text(4.1, 9.5, 'SD = 2 sp/s', color='white', fontsize=5.0, ha='center', va='center')
-        else:
-            axh.set_yticklabels([])
-            axh.text(7.35, 14.0, '$D_{\\mathrm{th}}$', color='#80DEEA', fontsize=5.6,
-                     ha='right', va='bottom', fontweight='bold')
-            axh.text(5.35, 17.5, 'Saturation\nsuppression', color='#E6DFF0', fontsize=5.1,
-                     ha='center', va='center', style='italic')
+    ax_f.imshow(mat_f, origin='lower', aspect='auto', cmap=h_cmap, norm=h_norm, interpolation='nearest')
+    ax_f.axvline(0.5, color='white', lw=1.1, alpha=0.95)
+    ax_f.axhline(13.5, color='#80DEEA', ls=':', lw=1.0, alpha=0.95)
+    X_c, Y_c = np.meshgrid(np.arange(1, mat_f.shape[1]), drives)
+    ax_f.contour(X_c, Y_c, mat_f[:, 1:], levels=[2.0], colors=['white'],
+                 linestyles=['--'], linewidths=[0.95])
+    ax_f.set_xticks(range(len(x_labs_fg)))
+    ax_f.set_xticklabels(x_labs_fg, fontsize=5.6)
+    ax_f.set_yticks([0, 4, 8, 12, 16, 20])
+    ax_f.set_xlabel('Peak photocurrent $I_{\\max}$', labelpad=2.2)
+    ax_f.set_ylabel('Background tonic drive $D$', labelpad=2.2)
+    ax_f.set_title('Desensitizing ChR2 (var. light $\\varphi$)', fontsize=6.3, pad=5.0)
+    ax_f.spines['top'].set_visible(True); ax_f.spines['right'].set_visible(True)
+    ax_f.spines['top'].set_linewidth(0.55); ax_f.spines['right'].set_linewidth(0.55)
+    ax_f.text(7.35, 14.0, '$D_{\\mathrm{th}}$', color='#80DEEA', fontsize=5.7,
+              ha='right', va='bottom', fontweight='bold')
+    ax_f.text(4.1, 9.5, 'SD = 2 sp/s', color='white', fontsize=5.1, ha='center', va='center')
 
     cb_h = fig.colorbar(im_e, cax=ax_hcbar)
     cb_h.set_label('Unlit amplitude (rate SD, sp/s)', fontsize=6.2, labelpad=2.8)
@@ -761,92 +762,92 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
     cb_h.ax.axhline(2.0, color='white', ls='--', lw=0.9)
 
     # =========================================================================
-    # Row 3: Panels h, i, j (Drive curves, Hopf boundary, Complex spectrum)
+    # Row 3: Panels g, h, i (Drive curves, Hopf boundary, Complex spectrum)
     # =========================================================================
     curve_defs = [
-        ('ctrl',        data['ctrl_osc'],       data['ctrl_lam'],       COL_CTRL,  '-',  1.40, 'No laser (tonic $D$ only)'),
-        ('var_des_40',  data['osc_var_des_40'], data['lam_var_des_40'], COL_VAR,   '-',  1.30, 'Var. light + desens. ($I_{\\max}=40$)'),
-        ('uni_des_40',  data['osc_uni_des_40'], data['lam_uni_des_40'], COL_UNI_D, '-',  1.10, 'Uniform + desens. ($I_{\\max}=40$)'),
-        ('uni_step_40', data['osc_uni_step_40'],data['lam_uni_step_40'],COL_STEP,  '--', 1.10, 'No desens. step ($I_{\\max}=40$)'),
+        ('ctrl',        data['ctrl_osc'],       data['ctrl_lam'],       COL_CTRL, '-', 1.45, 'No laser (tonic $D$ only)'),
+        ('var_des_40',  data['osc_var_des_40'], data['lam_var_des_40'], COL_VAR,  '-', 1.40, 'Var. light + desens. ($I_{\\max}=40$)'),
     ]
 
-    ax_h.axvspan(10.0, 13.5, color='#FDE8E8', alpha=0.80, lw=0, zorder=0)
-    ax_h.axvline(13.5, color='#777777', ls=':', lw=0.75, zorder=1)
-    ax_h.axhline(2.0, color='#999999', ls='--', lw=0.6, alpha=0.8, zorder=1)
+    ax_g.axvspan(10.0, 13.5, color='#FDE8E8', alpha=0.80, lw=0, zorder=0)
+    ax_g.axvline(13.5, color='#777777', ls=':', lw=0.75, zorder=1)
+    ax_g.axhline(2.0, color='#999999', ls='--', lw=0.6, alpha=0.8, zorder=1)
     legend_handles = []
     for cname, osc_arr, _, col, ls, lw, lab in curve_defs:
         m, sd = osc_arr.mean(-1), osc_arr.std(-1)
-        line, = ax_h.plot(drives, m, color=col, ls=ls, lw=lw, label=lab, zorder=3)
-        ax_h.fill_between(drives, np.maximum(0.0, m - sd), m + sd, color=col, alpha=0.14, lw=0, zorder=2)
+        line, = ax_g.plot(drives, m, color=col, ls=ls, lw=lw, label=lab, zorder=3)
+        ax_g.fill_between(drives, np.maximum(0.0, m - sd), m + sd, color=col, alpha=0.16, lw=0, zorder=2)
         legend_handles.append(line)
 
-    ax_h.set_xlim(0, 20.4); ax_h.set_ylim(-0.2, 9.8)
-    ax_h.set_xticks([0, 5, 10, 15, 20]); ax_h.set_yticks([0, 2, 4, 6, 8])
-    ax_h.set_xlabel('Background tonic drive $D$', labelpad=2.2)
-    ax_h.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
-    ax_h.set_title('Near-threshold gating of rhythmicity', fontsize=6.3, pad=4.5)
-    ax_h.text(11.75, 9.25, 'Near\nthresh.', ha='center', va='top', fontsize=5.1, color='#9E2A2B')
-    ax_h.text(13.85, -0.05, '$D_{\\mathrm{th}}$', ha='left', va='bottom', fontsize=5.1, color='#555555')
-    ax_h.annotate('$D=20$\nref.', xy=(19.95, 8.69), xytext=(16.1, 8.70),
+    ax_g.set_xlim(0, 20.4); ax_g.set_ylim(-0.2, 9.8)
+    ax_g.set_xticks([0, 5, 10, 15, 20]); ax_g.set_yticks([0, 2, 4, 6, 8])
+    ax_g.set_xlabel('Background tonic drive $D$', labelpad=2.2)
+    ax_g.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
+    ax_g.set_title('Near-threshold gating of rhythmicity', fontsize=6.3, pad=4.5)
+    ax_g.text(11.75, 9.25, 'Near\nthresh.', ha='center', va='top', fontsize=5.1, color='#9E2A2B')
+    ax_g.text(13.85, -0.05, '$D_{\\mathrm{th}}$', ha='left', va='bottom', fontsize=5.1, color='#555555')
+    ax_g.annotate('$D=20$\nref.', xy=(19.95, 8.69), xytext=(16.1, 8.70),
                   ha='center', va='center', fontsize=5.2, color=COL_CTRL,
                   arrowprops=dict(arrowstyle='->', lw=0.65, color=COL_CTRL, shrinkB=2.5))
 
-    fig.legend(handles=legend_handles, loc='lower center', bbox_to_anchor=(0.365, 0.449),
-               ncol=2, frameon=False, fontsize=5.4, columnspacing=1.35,
-               handlelength=1.7, handletextpad=0.45, labelspacing=0.22)
+    fig.legend(handles=legend_handles, loc='lower center', bbox_to_anchor=(0.365, 0.454),
+               ncol=2, frameon=False, fontsize=5.5, columnspacing=1.55,
+               handlelength=1.8, handletextpad=0.45, labelspacing=0.22)
 
-    ax_i.axvspan(10.0, 13.5, color='#FDE8E8', alpha=0.80, lw=0, zorder=0)
-    ax_i.axhspan(1.0, 1.18, color='#EAECEF', alpha=0.65, lw=0, zorder=0)
-    ax_i.axhline(1.0, color='#222222', ls='--', lw=0.8, zorder=2)
-    ax_i.axvline(13.5, color='#777777', ls=':', lw=0.75, zorder=1)
+    ax_h.axvspan(10.0, 13.5, color='#FDE8E8', alpha=0.80, lw=0, zorder=0)
+    ax_h.axhspan(1.0, 1.18, color='#EAECEF', alpha=0.65, lw=0, zorder=0)
+    ax_h.axhline(1.0, color='#222222', ls='--', lw=0.8, zorder=2)
+    ax_h.axvline(13.5, color='#777777', ls=':', lw=0.75, zorder=1)
     for cname, _, lam_arr, col, ls, lw, lab in curve_defs:
         m, sd = lam_arr.mean(-1), lam_arr.std(-1)
-        ax_i.plot(drives, m, color=col, ls=ls, lw=lw, zorder=3)
-        ax_i.fill_between(drives, m - sd, m + sd, color=col, alpha=0.14, lw=0, zorder=2)
+        ax_h.plot(drives, m, color=col, ls=ls, lw=lw, zorder=3)
+        ax_h.fill_between(drives, m - sd, m + sd, color=col, alpha=0.16, lw=0, zorder=2)
 
-    ax_i.set_xlim(0, 20.4); ax_i.set_ylim(0.32, 1.16)
-    ax_i.set_xticks([0, 5, 10, 15, 20]); ax_i.set_yticks([0.4, 0.6, 0.8, 1.0])
-    ax_i.set_xlabel('Background tonic drive $D$', labelpad=2.2)
-    ax_i.set_ylabel('Leading Re $\\lambda_{\\max}$', labelpad=2.2)
-    ax_i.set_title('Hopf stability boundary (Re $\\lambda = 1$)', fontsize=6.3, pad=4.5)
-    ax_i.text(0.45, 1.022, 'Rhythmic (Re $\\lambda > 1$)', fontsize=5.0, color='#222222', va='bottom')
-    ax_i.text(0.45, 0.974, 'Non-rhythmic (Re $\\lambda < 1$)', fontsize=5.0, color='#666666', va='top')
-    ax_i.text(13.85, 0.355, '$D_{\\mathrm{th}}$', ha='left', va='bottom', fontsize=5.1, color='#555555')
+    ax_h.set_xlim(0, 20.4); ax_h.set_ylim(0.32, 1.16)
+    ax_h.set_xticks([0, 5, 10, 15, 20]); ax_h.set_yticks([0.4, 0.6, 0.8, 1.0])
+    ax_h.set_xlabel('Background tonic drive $D$', labelpad=2.2)
+    ax_h.set_ylabel('Leading Re $\\lambda_{\\max}$', labelpad=2.2)
+    ax_h.set_title('Hopf stability boundary (Re $\\lambda = 1$)', fontsize=6.3, pad=4.5)
+    ax_h.text(0.45, 1.022, 'Rhythmic (Re $\\lambda > 1$)', fontsize=5.0, color='#222222', va='bottom')
+    ax_h.text(0.45, 0.974, 'Non-rhythmic (Re $\\lambda < 1$)', fontsize=5.0, color='#666666', va='top')
+    ax_h.text(13.85, 0.355, '$D_{\\mathrm{th}}$', ha='left', va='bottom', fontsize=5.1, color='#555555')
 
     ex_eigs = data['ex_eigs']
-    ax_j.axvspan(1.0, 1.45, color='#EAECEF', alpha=0.65, lw=0, zorder=0)
-    ax_j.axhline(0, color='#CCCCCC', lw=0.5, zorder=1)
-    ax_j.axvline(0, color='#CCCCCC', lw=0.5, zorder=1)
-    ax_j.axvline(1.0, color='#222222', ls='--', lw=0.8, zorder=2)
+    ax_i.axvspan(1.0, 1.45, color='#EAECEF', alpha=0.65, lw=0, zorder=0)
+    ax_i.axhline(0, color='#CCCCCC', lw=0.5, zorder=1)
+    ax_i.axvline(0, color='#CCCCCC', lw=0.5, zorder=1)
+    ax_i.axvline(1.0, color='#222222', ls='--', lw=0.8, zorder=2)
     spec_defs = [
-        (0, '#B0B5BD', 2.8, 0.70, 'o', '$D=0$ rest'),
-        (1, COL_LASER, 4.0, 0.78, 'o', '$D=0$ + laser'),
-        (3, COL_VAR,   5.0, 0.88, 'o', '$D=12$ + laser'),
-        (5, COL_CTRL,  3.6, 0.68, 'o', '$D=20$ ref.'),
+        (0, '#B0B5BD', 2.8, 0.32, 'o', '$D=0$ rest'),
+        (1, COL_LASER, 4.0, 0.38, 'o', '$D=0$ + laser'),
+        (3, COL_VAR,   4.8, 0.44, 'o', '$D=12$ + laser'),
+        (5, COL_CTRL,  3.6, 0.35, 'o', '$D=20$ ref.'),
     ]
     for k_idx, col, sz, alp, mk, lab in spec_defs:
         ev = ex_eigs[k_idx]
-        ax_j.scatter(ev.real, ev.imag, s=sz, c=col, alpha=alp, marker=mk, edgecolors='none',
+        ax_i.scatter(ev.real, ev.imag, s=sz, c=col, alpha=alp, marker=mk, edgecolors='none',
                      label=lab, zorder=3 + (k_idx == 3))
         if k_idx in (1, 3, 5):
             lead_v = ev[int(ev.real.argmax())]
-            ax_j.scatter([lead_v.real, lead_v.real], [lead_v.imag, -lead_v.imag],
-                         s=16, facecolors='none', edgecolors=col, linewidths=0.9, zorder=6)
+            ax_i.scatter([lead_v.real, lead_v.real], [lead_v.imag, -lead_v.imag],
+                         s=16, facecolors='none', edgecolors=col, linewidths=0.95, zorder=6)
 
-    ax_j.set_xlim(-1.25, 1.32); ax_j.set_ylim(-1.25, 1.25)
-    ax_j.set_xticks([-1, 0, 1]); ax_j.set_yticks([-1, 0, 1])
-    ax_j.set_aspect('equal', adjustable='box')
-    ax_j.set_xlabel('Re $\\lambda$', labelpad=2.2)
-    ax_j.set_ylabel('Im $\\lambda$', labelpad=2.2)
-    ax_j.set_title("Jacobian spectrum $f$\u2032($V$)$\\,W$", fontsize=6.3, pad=4.5)
-    ax_j.text(0.95, 1.15, 'Re $\\lambda = 1$', ha='right', va='top', fontsize=4.9, color='#222222')
-    ax_j.legend(loc='lower left', frameon=True, facecolor='white', framealpha=0.88, edgecolor='none',
-                fontsize=4.9, markerscale=1.35, handletextpad=0.22, labelspacing=0.20, borderpad=0.18)
+    ax_i.set_xlim(-1.25, 1.32); ax_i.set_ylim(-1.25, 1.25)
+    ax_i.set_xticks([-1, 0, 1]); ax_i.set_yticks([-1, 0, 1])
+    ax_i.set_aspect('equal', adjustable='box')
+    ax_i.set_xlabel('Re $\\lambda$', labelpad=2.2)
+    ax_i.set_ylabel('Im $\\lambda$', labelpad=2.2)
+    ax_i.set_title("Jacobian spectrum $f$\u2032($V$)$\\,W$", fontsize=6.3, pad=4.5)
+    ax_i.text(0.95, 1.15, 'Re $\\lambda = 1$', ha='right', va='top', fontsize=4.9, color='#222222')
+    leg_i = ax_i.legend(loc='lower left', frameon=True, facecolor='white', framealpha=0.88, edgecolor='none',
+                        fontsize=4.9, markerscale=1.35, handletextpad=0.22, labelspacing=0.20, borderpad=0.18)
+    for lh in leg_i.legend_handles:
+        lh.set_alpha(0.85)
 
     # =========================================================================
-    # Row 4: Panels k, l, m — 500-Shuffle Variability & Mechanistic Explanation
+    # Row 4: Panels j, k, l — 500-Shuffle Variability & Mechanistic Explanation
     # =========================================================================
-    # ---- Panel k: Distribution across 500 random shuffles of the 10 E cells
+    # ---- Panel j: Distribution across 500 random shuffles of the 10 E cells
     rng_jit = np.random.default_rng(7)
     shuf_groups = [
         (shuf['osc_d0_var40'],  COL_LASER, '$D=0$\nvar. 40'),
@@ -854,37 +855,31 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
         (shuf['osc_d12_var40'], COL_VAR,   '$D=12$\nvar. 40'),
         (shuf['osc_d12_uni40'], COL_UNI_D, '$D=12$\nuni. 40'),
     ]
-    ax_k.axhline(2.0, color='#999999', ls='--', lw=0.6, alpha=0.85, zorder=1)
-    ax_k.axhline(data['ctrl_osc'][-1].mean(), color=COL_CTRL, ls=':', lw=0.75, alpha=0.75, zorder=1)
+    ax_j.axhline(2.0, color='#999999', ls='--', lw=0.6, alpha=0.85, zorder=1)
+    d20_mean = float(data['ctrl_osc'][-1].mean())
+    ax_j.axhline(d20_mean, color=COL_STEP, ls='--', lw=0.85, alpha=0.90, zorder=1)
 
     for xi, (vals, col, _) in enumerate(shuf_groups):
         jit = rng_jit.uniform(-0.22, 0.22, vals.size)
-        ax_k.scatter(xi + jit, vals, s=2.4, color=col, alpha=0.38, edgecolors='none', zorder=2)
+        ax_j.scatter(xi + jit, vals, s=2.4, color=col, alpha=0.38, edgecolors='none', zorder=2)
         q25, q50, q75 = np.percentile(vals, [25, 50, 75])
-        ax_k.plot([xi - 0.26, xi + 0.26], [q50, q50], color='#111111', lw=1.3, zorder=5)
-        ax_k.plot([xi, xi], [q25, q75], color='#111111', lw=1.8, alpha=0.85, zorder=4)
+        ax_j.plot([xi - 0.26, xi + 0.26], [q50, q50], color='#111111', lw=1.3, zorder=5)
+        ax_j.plot([xi, xi], [q25, q75], color='#111111', lw=1.8, alpha=0.85, zorder=4)
         pct_hi = 100.0 * np.mean(vals >= 2.0)
         lbl_pct = f'{pct_hi:.1f}%' if (0 < pct_hi < 1) else f'{pct_hi:.0f}%'
-        ax_k.text(xi, 9.85, lbl_pct, ha='center', va='bottom', fontsize=5.0, fontweight='bold', color=col)
+        ax_j.text(xi, 9.85, lbl_pct, ha='center', va='bottom', fontsize=5.0, fontweight='bold', color=col)
 
-    ax_k.set_xlim(-0.55, 3.55)
-    ax_k.set_ylim(-0.3, 11.1)
-    ax_k.set_xticks(range(len(shuf_groups)))
-    ax_k.set_xticklabels([g[2] for g in shuf_groups], fontsize=5.3)
-    ax_k.set_yticks([0, 2, 4, 6, 8, 10])
-    ax_k.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
-    ax_k.set_title('500 random 10-cell shuffles (% $\\geq$ 2 sp/s)', fontsize=6.0, pad=4.5)
+    ax_j.set_xlim(-0.55, 3.55)
+    ax_j.set_ylim(-0.3, 11.1)
+    ax_j.set_xticks(range(len(shuf_groups)))
+    ax_j.set_xticklabels([g[2] for g in shuf_groups], fontsize=5.3)
+    ax_j.set_yticks([0, 2, 4, 6, 8, 10])
+    ax_j.set_ylabel('Unlit amplitude (rate SD, sp/s)', labelpad=2.2)
+    ax_j.set_title('500 random 10-cell shuffles (% $\\geq$ 2 sp/s)', fontsize=6.0, pad=4.5)
+    ax_j.text(-0.46, d20_mean + 0.16, '$D = 20$ mean ref.', ha='left', va='bottom',
+              fontsize=4.85, fontweight='bold', color=COL_STEP)
 
-    # Clean variance-decomposition callout inside empty mid-left space of panel k
-    vd = shuf['vd_mat']
-    var_pct_sub = 100.0 * vd.mean(1).var() / vd.var()
-    ax_k.text(0.03, 0.72,
-              f'Variance at $D=12$:\n{var_pct_sub:.1f}% cell subset\n{100.0-var_pct_sub:.1f}% trial noise',
-              transform=ax_k.transAxes, ha='left', va='top', fontsize=4.8, color='#222222',
-              bbox=dict(boxstyle='round,pad=0.22', fc='#F5F6F8', ec='#CCCCCC', lw=0.5))
-    ax_k.text(3.48, 8.92, '$D=20$', ha='right', va='bottom', fontsize=4.7, color=COL_CTRL)
-
-    # ---- Panel l: Analytical zero-simulation linear-response prediction explains the 500 shuffles!
+    # ---- Panel k: Analytical zero-simulation linear-response prediction explains the 500 shuffles!
     x_pred = shuf['var_pred_lam']
     y_osc = shuf['osc_d12_var40']
     c_dV = shuf['var_pred_dV']
@@ -893,37 +888,37 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
 
     vmax_dv = float(np.percentile(np.abs(c_dV), 98))
     norm_dv = mcolors.TwoSlopeNorm(vmin=-vmax_dv, vcenter=0.0, vmax=vmax_dv)
-    ax_l.axvline(1.0, color='#222222', ls='--', lw=0.75, zorder=1)
-    ax_l.axhline(2.0, color='#999999', ls='--', lw=0.6, alpha=0.85, zorder=1)
-    sc = ax_l.scatter(x_pred, y_osc, c=c_dV, cmap='coolwarm', norm=norm_dv,
+    ax_k.axvline(1.0, color='#222222', ls='--', lw=0.75, zorder=1)
+    ax_k.axhline(2.0, color='#999999', ls='--', lw=0.6, alpha=0.85, zorder=1)
+    sc = ax_k.scatter(x_pred, y_osc, c=c_dV, cmap='coolwarm', norm=norm_dv,
                       s=6.0, alpha=0.82, edgecolors='#222222', linewidths=0.18, zorder=3)
 
     # Mark causal top-10 and bottom-10 g_eff subsets (uniform I=40) cleanly with diamonds
-    ax_l.scatter([shuf['causal_pred_lam'][0]], [shuf['causal_osc'][2]], marker='D', s=22,
+    ax_k.scatter([shuf['causal_pred_lam'][0]], [shuf['causal_osc'][2]], marker='D', s=22,
                  fc='#B8252A', ec='black', lw=0.6, zorder=6, label='Top-10 $g_{\\mathrm{eff}}$')
-    ax_l.scatter([shuf['causal_pred_lam'][1]], [shuf['causal_osc'][3]], marker='D', s=22,
+    ax_k.scatter([shuf['causal_pred_lam'][1]], [shuf['causal_osc'][3]], marker='D', s=22,
                  fc='#2166AC', ec='black', lw=0.6, zorder=6, label='Bot-10 $g_{\\mathrm{eff}}$')
 
     x_lo = min(0.74, float(shuf['causal_pred_lam'][1]) - 0.03)
-    ax_l.set_xlim(x_lo, 1.13)
-    ax_l.set_ylim(-0.2, 9.0)
-    ax_l.set_xticks([0.8, 0.9, 1.0, 1.1])
-    ax_l.set_yticks([0, 2, 4, 6, 8])
-    ax_l.set_xlabel('Predicted Re $\\lambda_{\\max}^{\\mathrm{pred}}$ (from $W$ alone)', labelpad=2.2)
-    ax_l.set_ylabel('Simulated amplitude (rate SD, sp/s)', labelpad=2.2)
-    ax_l.set_title('Linear-response prediction ($D = 12$, $n = 500$)', fontsize=6.1, pad=4.5)
-    ax_l.text(0.04, 0.94, f'Spearman $\\rho = {rho_l:.2f}$\nPearson $r = {r_l:.2f}$',
-              transform=ax_l.transAxes, ha='left', va='top', fontsize=5.0, fontweight='bold',
+    ax_k.set_xlim(x_lo, 1.13)
+    ax_k.set_ylim(-0.2, 9.0)
+    ax_k.set_xticks([0.8, 0.9, 1.0, 1.1])
+    ax_k.set_yticks([0, 2, 4, 6, 8])
+    ax_k.set_xlabel('Predicted Re $\\lambda_{\\max}^{\\mathrm{pred}}$ (from $W$ alone)', labelpad=2.2)
+    ax_k.set_ylabel('Simulated amplitude (rate SD, sp/s)', labelpad=2.2)
+    ax_k.set_title('Linear-response prediction ($D = 12$, $n = 500$)', fontsize=6.1, pad=4.5)
+    ax_k.text(0.04, 0.94, f'Spearman $\\rho = {rho_l:.2f}$\nPearson $r = {r_l:.2f}$',
+              transform=ax_k.transAxes, ha='left', va='top', fontsize=5.0, fontweight='bold',
               color='#1A1A1A', bbox=dict(boxstyle='round,pad=0.20', fc='white', alpha=0.85, ec='none'))
-    ax_l.legend(loc='upper left', bbox_to_anchor=(0.01, 0.69), frameon=False,
+    ax_k.legend(loc='upper left', bbox_to_anchor=(0.01, 0.69), frameon=False,
                 fontsize=4.7, handletextpad=0.22, labelspacing=0.20)
 
-    cb_l = fig.colorbar(sc, cax=ax_lcbar)
-    cb_l.set_label('Net $\\langle\\Delta V\\rangle$', fontsize=5.5, labelpad=2.0)
-    cb_l.ax.tick_params(labelsize=5.0, length=1.8, width=0.5)
-    cb_l.outline.set_linewidth(0.5)
+    cb_k = fig.colorbar(sc, cax=ax_kcbar)
+    cb_k.set_label('Net $\\langle\\Delta V\\rangle$', fontsize=5.5, labelpad=2.0)
+    cb_k.ax.tick_params(labelsize=5.0, length=1.8, width=0.5)
+    cb_k.outline.set_linewidth(0.5)
 
-    # ---- Panel m: Ranked predictor comparison (why multi-synaptic amplification matters)
+    # ---- Panel l: Ranked predictor comparison (why multi-synaptic amplification matters)
     pred_items = [
         ('Linear-resp. Re $\\lambda^{\\mathrm{pred}}$', shuf['var_pred_lam'], COL_VAR),
         ('Multi-syn. net $\\langle\\Delta V\\rangle$',   shuf['var_pred_dV'],  '#E07A5F'),
@@ -932,26 +927,26 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
         ('Eigenmode $|v_i|$',                           shuf['var_pred_vmag'], '#AEB6C2'),
         ('Phase coherence $R$',                         shuf['var_pred_phaseR'], '#AEB6C2'),
     ]
-    labels_m = [it[0] for it in pred_items][::-1]
+    labels_l = [it[0] for it in pred_items][::-1]
     r2_vals = [pearsonr(it[1], y_osc)[0] ** 2 for it in pred_items][::-1]
     rho_vals = [abs(spearmanr(it[1], y_osc)[0]) for it in pred_items][::-1]
-    cols_m = [it[2] for it in pred_items][::-1]
+    cols_l = [it[2] for it in pred_items][::-1]
 
-    y_pos = np.arange(len(labels_m))
-    ax_m.barh(y_pos, r2_vals, height=0.62, color=cols_m, edgecolor='#222222', linewidth=0.35, zorder=3)
+    y_pos = np.arange(len(labels_l))
+    ax_l.barh(y_pos, r2_vals, height=0.62, color=cols_l, edgecolor='#222222', linewidth=0.35, zorder=3)
     for yi, (r2v, rhov) in enumerate(zip(r2_vals, rho_vals)):
-        ax_m.text(r2v + 0.02, yi, f'{r2v:.2f} ($\\rho$={rhov:.2f})',
+        ax_l.text(r2v + 0.02, yi, f'{r2v:.2f} ($\\rho$={rhov:.2f})',
                   va='center', ha='left', fontsize=4.65, color='#222222')
 
-    ax_m.set_yticks(y_pos)
-    ax_m.set_yticklabels(labels_m, fontsize=5.1)
-    ax_m.set_xlim(0, 1.04)
-    ax_m.set_xticks([0, 0.3, 0.6])
-    ax_m.set_xlabel('Variance explained ($R^2$)', labelpad=2.2)
-    ax_m.set_title('What drives subset variability?', fontsize=6.1, pad=4.5)
+    ax_l.set_yticks(y_pos)
+    ax_l.set_yticklabels(labels_l, fontsize=5.1)
+    ax_l.set_xlim(0, 1.04)
+    ax_l.set_xticks([0, 0.3, 0.6])
+    ax_l.set_xlabel('Variance explained ($R^2$)', labelpad=2.2)
+    ax_l.set_title('What drives subset variability?', fontsize=6.1, pad=4.5)
 
     # =========================================================================
-    # Bold lowercase panel letters a–m, aligned cleanly across all 4 rows
+    # Bold lowercase panel letters a–l, aligned cleanly across all 4 rows
     # =========================================================================
     add_panel_label_xy(fig, 0.015, 0.968, 'a')
     add_panel_label_xy(fig, 0.278, 0.968, 'b')
@@ -959,16 +954,15 @@ def build_figure(data: dict, shuf: dict, out_dir: str):
     add_panel_label_xy(fig, 0.712, 0.968, 'd')
 
     add_panel_label_xy(fig, 0.015, 0.702, 'e')
-    add_panel_label_xy(fig, 0.342, 0.702, 'f')
-    add_panel_label_xy(fig, 0.640, 0.702, 'g')
+    add_panel_label_xy(fig, 0.478, 0.702, 'f')
 
-    add_panel_label_xy(fig, 0.015, 0.440, 'h')
-    add_panel_label_xy(fig, 0.354, 0.440, 'i')
-    add_panel_label_xy(fig, 0.684, 0.440, 'j')
+    add_panel_label_xy(fig, 0.015, 0.440, 'g')
+    add_panel_label_xy(fig, 0.354, 0.440, 'h')
+    add_panel_label_xy(fig, 0.684, 0.440, 'i')
 
-    add_panel_label_xy(fig, 0.015, 0.212, 'k')
-    add_panel_label_xy(fig, 0.324, 0.212, 'l')
-    add_panel_label_xy(fig, 0.678, 0.212, 'm')
+    add_panel_label_xy(fig, 0.015, 0.212, 'j')
+    add_panel_label_xy(fig, 0.324, 0.212, 'k')
+    add_panel_label_xy(fig, 0.678, 0.212, 'l')
 
     os.makedirs(out_dir, exist_ok=True)
     pdf_path = os.path.join(out_dir, 'Figure1_opto_threshold.pdf')

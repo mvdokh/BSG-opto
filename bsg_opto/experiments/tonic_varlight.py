@@ -137,7 +137,7 @@ def _run_small(net: BalancedNetwork, pct: float, drives: np.ndarray, i_max: floa
                     c=C_col[c], marker='o', ms=4, capsize=2, label=L_lab[c])
     ax.plot(drives, S['var']['post'].mean(1), c=C_col['var'], ls=':', label='after light off (random light)')
     ax.axvline(20, c='k', ls=':', lw=0.8)
-    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)'); ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)'); ax.set_ylabel('Unlit amplitude (rate SD, sp/s)')
     ax.set_title(f'{n_draws} draws per point (D = 20 ref: {osc_ref:.1f}; conn_seed={net.cfg.seed}, seed={seed_offset})', fontsize=9.5)
     ax.legend(fontsize=7, frameon=False, loc='upper left')
 
@@ -289,7 +289,7 @@ def _run_large(net: BalancedNetwork, pct: float, drives: np.ndarray, i_max: floa
                     c=C_col[c], marker='o', ms=4, capsize=2, label=L_lab[c])
     ax.plot(drives, S['var']['post'].mean(1), c=C_col['var'], ls=':', label='after light off (random light)')
     ax.axvline(20, c='k', ls=':', lw=0.8)
-    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)'); ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)'); ax.set_ylabel('Unlit amplitude (rate SD, sp/s)')
     ax.set_title(f'N = {net.N}, {n_draws} draws per point (D = 20: {osc_ref:.1f})', fontsize=10)
     ax.legend(fontsize=7, frameon=False, loc='upper left')
 

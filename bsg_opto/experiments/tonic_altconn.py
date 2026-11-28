@@ -168,7 +168,7 @@ def _run_one_intensity(net: BalancedNetwork, pct: float, p_op: float, i_max: flo
                     c=C_col[c], marker='o', ms=4, capsize=2, label=L_lab[c])
     ax.plot(drives, S['var']['post'].mean(1), c=C_col['var'], ls=':', label='after light off (random light)')
     ax.axvline(20, c='k', ls=':', lw=0.8)
-    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)'); ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D (all cells)'); ax.set_ylabel('Unlit amplitude (rate SD, sp/s)')
     ax.set_title(f'opsin→all p = {p_op:g}, max I = {i_max:g}, {n_draws} draws (orig. ref D = 20: {osc_ref:.1f})', fontsize=9.5)
     ax.legend(fontsize=7, frameon=False, loc='upper left')
 
@@ -205,7 +205,7 @@ def _run_one_intensity(net: BalancedNetwork, pct: float, p_op: float, i_max: flo
         e = SW['on'][pi_] - SW['off'][pi_]
         axs[1].errorbar(drives + 0.06 * pi_, e.mean(-1), e.std(-1), c=c_, marker='o', ms=3, capsize=2, label=f'p = {p:g}')
     axs[0].plot([], [], c='k', ls=':', label='dotted: no light')
-    axs[0].set_yscale('log'); axs[0].set_xlabel('Tonic drive D'); axs[0].set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    axs[0].set_yscale('log'); axs[0].set_xlabel('Tonic drive D'); axs[0].set_ylabel('Unlit amplitude (rate SD, sp/s)')
     axs[0].set_title(f'Opsin→all connection prob (max I = {i_max:g}, baseline {C0:g}), random light, {n_sw} draws', fontsize=9.5)
     axs[0].legend(fontsize=7, frameon=False)
     axs[1].axhline(0, c='k', lw=0.6)

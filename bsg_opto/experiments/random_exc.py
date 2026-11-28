@@ -145,7 +145,7 @@ def run(pct: float = 15.0, i_max: float = 80.0, no_desens: bool = False,
     ax = axs[0]
     ax.boxplot([np.full(n_draws, m_rest['osc_sd']), oa, po, [m_glob['osc_sd']]],
                tick_labels=['no light', f'light on\n{pct_str} E', 'after light', 'global\ndrive'])
-    ax.set_ylabel('Rhythmicity of unlit cells\n(temporal SD, Hz)')
+    ax.set_ylabel('Unlit amplitude\n(temporal rate SD, sp/s)')
     ax.set_title(f'{n_draws} random {pct_str} E draws', fontsize=9)
 
     ax = axs[1]

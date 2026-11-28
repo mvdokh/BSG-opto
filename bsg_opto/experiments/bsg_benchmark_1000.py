@@ -47,6 +47,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.patheffects as pe
 from matplotlib.offsetbox import AnchoredOffsetbox, DrawingArea, HPacker, TextArea
 from matplotlib.patches import Circle
 from scipy.stats import spearmanr
@@ -327,32 +328,31 @@ def build_figure(data: dict, out_dir: str):
     COL_N1 = '#2B6CB0'
     COL_N2 = '#2F855A'
 
-    fig = plt.figure(figsize=(7.20, 7.65))
+    fig = plt.figure(figsize=(7.20, 6.45))
 
-    # Row 1 (top, y in [0.695, 0.945]):
-    #   a: Rhythmicity trajectories & percentiles across D = 1..20 (n = 1,000 models)
+    # Row 1 (compact top row, y in [0.748, 0.962]):
+    #   a: Oscillation amplitude across D = 1..20 (n = 1,000 models)
     #   b: Fraction of models rhythmic vs D + onset threshold D_th histogram
-    #   c: 3 archetype examples at D = 20 (classic oscillator, fast oscillator, real-eigenvalue fixed point)
-    ax_a = fig.add_axes([0.075, 0.708, 0.375, 0.238])
-    ax_b = fig.add_axes([0.535, 0.708, 0.430, 0.238])
+    ax_a = fig.add_axes([0.075, 0.748, 0.375, 0.214])
+    ax_b = fig.add_axes([0.535, 0.748, 0.430, 0.214])
 
-    # Row 2 (middle, y in [0.398, 0.618]): 3 archetype rasters + nerves at D = 20 (panel c)
+    # Row 2 (middle, y in [0.418, 0.658]): 3 archetype rasters + nerves at D = 20 (panel c)
     c_x = [0.075, 0.378, 0.680]
     c_w = 0.256
     ax_cr, ax_cn = [], []
     for x0 in c_x:
-        ax_cr.append(fig.add_axes([x0, 0.478, c_w, 0.138]))
-        ax_cn.append(fig.add_axes([x0, 0.402, c_w, 0.066]))
-    ax_ccb = fig.add_axes([0.946, 0.478, 0.011, 0.138])
+        ax_cr.append(fig.add_axes([x0, 0.502, c_w, 0.156]))
+        ax_cn.append(fig.add_axes([x0, 0.418, c_w, 0.074]))
+    ax_ccb = fig.add_axes([0.946, 0.502, 0.011, 0.156])
 
-    # Row 3 (bottom, y in [0.072, 0.305]):
-    #   d: Structural predictor — Leading eigenvalue (Re lam_1, |Im lam_1|) map of all 1,000 models
-    #   e: Oscillatory SD vs static spatial SD at D = 20 (oscillators vs static fixed points!)
-    #   f: Distribution of oscillation frequency at D = 20 vs analytical Hopf prediction
-    ax_d = fig.add_axes([0.075, 0.072, 0.218, 0.225])
-    ax_dcb = fig.add_axes([0.299, 0.072, 0.010, 0.225])
-    ax_e = fig.add_axes([0.425, 0.072, 0.218, 0.225])
-    ax_f = fig.add_axes([0.734, 0.072, 0.226, 0.225])
+    # Row 3 (bottom, y in [0.088, 0.328]):
+    #   d: Leading eigenvalue (Re lam_1, |Im lam_1|) map of all 1,000 models
+    #   e: Temporal vs static spatial rate SD at D = 20
+    #   f: Distribution of oscillation frequency at D = 20
+    ax_d = fig.add_axes([0.075, 0.088, 0.218, 0.240])
+    ax_dcb = fig.add_axes([0.299, 0.088, 0.010, 0.240])
+    ax_e = fig.add_axes([0.425, 0.088, 0.218, 0.240])
+    ax_f = fig.add_axes([0.734, 0.088, 0.226, 0.240])
 
     # =========================================================================
     # Panel a: Oscillation amplitude (temporal rate SD) across D = 1..20 (n = 1,000)
@@ -419,15 +419,16 @@ def build_figure(data: dict, out_dir: str):
         if hits.size:
             d_th_list.append(drives[hits[0]])
     d_th_arr = np.asarray(d_th_list)
-    ax_ins = fig.add_axes([0.592, 0.774, 0.140, 0.088])
-    ax_ins.hist(d_th_arr, bins=np.arange(8.5, 21.5, 1.0), color=COL_TEAL, alpha=0.82, edgecolor='white', lw=0.4)
-    ax_ins.axvline(np.median(d_th_arr), color='#111111', ls='--', lw=0.8)
+    ax_ins = fig.add_axes([0.592, 0.798, 0.140, 0.074])
+    ax_ins.hist(d_th_arr, bins=np.arange(8.5, 21.5, 1.0), color=COL_MAIN, alpha=0.88, edgecolor='white', lw=0.45)
+    ax_ins.axvline(np.median(d_th_arr), color='#111111', ls='--', lw=0.85,
+                   path_effects=[pe.withStroke(linewidth=1.7, foreground='white')], zorder=5)
     ax_ins.set_xlim(9, 20.5)
     ax_ins.set_xticks([10, 15, 20])
     ax_ins.set_yticks([])
     ax_ins.tick_params(labelsize=4.9, length=1.8, width=0.5)
-    ax_ins.set_xlabel('Onset $D_{\\mathrm{th}}$', fontsize=5.0, labelpad=1.0)
-    ax_ins.set_title(f'Med. $D_{{\\mathrm{{th}}}} = {np.median(d_th_arr):.0f}$', fontsize=5.0, pad=2.0)
+    ax_ins.set_xlabel('$D$ at rhythmicity onset', fontsize=4.8, labelpad=1.2)
+    ax_ins.set_title(f'Med. $D = {np.median(d_th_arr):.0f}$', fontsize=5.0, pad=2.0)
 
     # =========================================================================
     # Panel c: 3 Archetype realizations at D = 20 (raster + nerve, 2-8 s window)
@@ -535,13 +536,9 @@ def build_figure(data: dict, out_dir: str):
     ax_d.axhline(0.0, color='#888888', lw=0.5, ls=':', zorder=1)
     ax_d.set_xlim(0.84, 1.24); ax_d.set_ylim(-0.03, 0.62)
     ax_d.set_xticks([0.9, 1.0, 1.1, 1.2]); ax_d.set_yticks([0.0, 0.2, 0.4, 0.6])
-    ax_d.set_xlabel('Leading Re $\\lambda_1(W)$', labelpad=2.2)
-    ax_d.set_ylabel('Leading $|$Im $\\lambda_1(W)|$', labelpad=2.2)
+    ax_d.set_xlabel('Highest Re $\\lambda(W)$ (Re $\\lambda_1$)', labelpad=2.2)
+    ax_d.set_ylabel('$|$Im $\\lambda_1(W)|$ of highest-Re mode', labelpad=2.2)
     ax_d.set_title('Eigenvalue structure of 1,000 networks', fontsize=6.4, pad=4.5)
-    ax_d.annotate(f'Real $\\lambda_1$ ($n={is_real_lead.sum()}$)\n(mostly non-rhythmic)',
-                  xy=(1.07, 0.01), xytext=(1.09, 0.46),
-                  fontsize=4.9, color='#222222', ha='center',
-                  arrowprops=dict(arrowstyle='->', lw=0.65, color='#333333'))
 
     cb_d = fig.colorbar(sc_d, cax=ax_dcb)
     cb_d.set_label('Rate SD at $D=20$ (sp/s)', fontsize=5.7, labelpad=2.5)
@@ -553,10 +550,10 @@ def build_figure(data: dict, out_dir: str):
     # Panel e: Dynamic rhythmicity (temporal SD) vs static heterogeneity (spatial SD) at D=20
     # =========================================================================
     ax_e.axvline(2.0, color='#888888', ls='--', lw=0.65, zorder=1)
-    ax_e.scatter(osc_d20[is_cplx_lead], sp_sd[is_cplx_lead, -1], s=5.5, color=COL_CPLX, alpha=0.55,
-                 edgecolors='none', label='Complex $\\lambda_1$ ($\\mathrm{Im}\\,\\lambda_1 \\neq 0$)', zorder=3)
-    ax_e.scatter(osc_d20[is_real_lead], sp_sd[is_real_lead, -1], s=7.0, color=COL_REAL, alpha=0.72,
-                 edgecolors='none', label='Real $\\lambda_1$ ($\\mathrm{Im}\\,\\lambda_1 = 0$)', zorder=4)
+    ax_e.scatter(osc_d20[is_cplx_lead], sp_sd[is_cplx_lead, -1], s=8.5, color=COL_CPLX, alpha=0.45,
+                 edgecolors='white', linewidths=0.20, label='Complex $\\lambda_1$ ($\\mathrm{Im}\\,\\lambda_1 \\neq 0$)', zorder=3)
+    ax_e.scatter(osc_d20[is_real_lead], sp_sd[is_real_lead, -1], s=8.5, color=COL_REAL, alpha=0.48,
+                 edgecolors='white', linewidths=0.20, label='Real $\\lambda_1$ ($\\mathrm{Im}\\,\\lambda_1 = 0$)', zorder=4)
     ax_e.set_xlim(-0.4, 12.0); ax_e.set_ylim(-0.3, 22.8)
     ax_e.set_xticks([0, 3, 6, 9, 12]); ax_e.set_yticks([0, 5, 10, 15, 20])
     ax_e.set_xlabel('Temporal rate SD (sp/s)\n(raster x-axis)', labelpad=2.0)
@@ -565,42 +562,43 @@ def build_figure(data: dict, out_dir: str):
     ax_e.text(-0.15, 22.1, 'Static\nfixed pts', fontsize=4.5, color=COL_REAL, fontweight='bold', va='top', ha='left')
     ax_e.text(11.6, 16.0, 'Rhythmic\noscillators', fontsize=4.6, color=COL_CPLX, fontweight='bold',
               va='top', ha='right')
-    ax_e.legend(loc='upper right', frameon=False,
-                fontsize=4.7, markerscale=1.25, handletextpad=0.25, labelspacing=0.22)
+    leg_e = ax_e.legend(loc='upper right', frameon=False,
+                        fontsize=4.7, markerscale=1.25, handletextpad=0.25, labelspacing=0.22)
+    for h in leg_e.legend_handles:
+        h.set_alpha(1.0)
 
     # =========================================================================
-    # Panel f: Frequency distribution at D = 20 vs analytical Hopf prediction
+    # Panel f: Distribution of oscillation frequencies at D = 20 (rhythmic models)
     # =========================================================================
-    # Filter to rhythmic models (rate SD >= 2 sp/s)
     rhy_mask = is_rhythmic_20
     f_rhy = freq[rhy_mask, -1]
-    # Analytical Hopf frequency f_Hopf = (gain * |Im lam_c|) / (2*pi*tau_V)
-    f_hopf = (1.2 * data['lamc_im'][rhy_mask]) / (2.0 * np.pi * 0.050)
-    rho_f, _ = spearmanr(f_hopf, f_rhy)
 
-    ax_f.scatter(f_hopf, f_rhy, s=5.5, color=COL_TEAL, alpha=0.55, edgecolors='none', zorder=3)
-    ax_f.plot([0, 2.2], [0, 2.2], color='#444444', ls='--', lw=0.75, label='$f_{\\mathrm{sim}} = f_{\\mathrm{Hopf}}$', zorder=2)
-    ax_f.set_xlim(0, 2.2); ax_f.set_ylim(0, 2.2)
-    ax_f.set_xticks([0, 0.5, 1.0, 1.5, 2.0]); ax_f.set_yticks([0, 0.5, 1.0, 1.5, 2.0])
-    ax_f.set_xlabel('Hopf pred. $f_{\\mathrm{Hopf}} = f$\u2032$|\\mathrm{Im}\\,\\lambda_1| / 2\\pi\\tau_V$ (Hz)', labelpad=2.2)
-    ax_f.set_ylabel('Oscillation frequency (Hz)', labelpad=2.2)
-    ax_f.set_title('Slow oscillation frequency ($\\tau_V = 50$ ms)', fontsize=6.4, pad=4.5)
-    ax_f.text(0.04, 0.94,
+    df = 1.0 / 6.0  # exact FFT bin width for 6 s steady-state window
+    fbins = np.arange(0.5 * df, 12.5 * df, df)
+    ax_f.hist(f_rhy, bins=fbins, color=COL_MAIN, alpha=0.88, edgecolor='white', lw=0.55, zorder=3)
+    ax_f.axvline(np.median(f_rhy), color='#111111', ls='--', lw=0.95,
+                 path_effects=[pe.withStroke(linewidth=1.8, foreground='white')], zorder=5)
+
+    ax_f.set_xlim(0.0, 2.0)
+    ax_f.set_xticks([0.0, 0.5, 1.0, 1.5, 2.0])
+    ax_f.set_xlabel('Oscillation frequency at $D = 20$ (Hz)', labelpad=2.2)
+    ax_f.set_ylabel('Rhythmic networks (count)', labelpad=2.2)
+    ax_f.set_title('Oscillation frequency ($\\tau_V = 50$ ms)', fontsize=6.4, pad=4.5)
+    ax_f.text(0.96, 0.94,
               f'Rhythmic ($n={rhy_mask.sum()}$):\n'
               f'med. = {np.median(f_rhy):.2f} Hz\n'
               f'mean = {f_rhy.mean():.2f} $\\pm$ {f_rhy.std():.2f} Hz\n'
-              f'max = {f_rhy.max():.2f} Hz\n'
-              f'$\\rho = {rho_f:.2f}$',
-              transform=ax_f.transAxes, ha='left', va='top', fontsize=4.8, color='#1A1A1A',
-              bbox=dict(boxstyle='round,pad=0.22', fc='white', alpha=0.88, ec='#CCCCCC', lw=0.45))
+              f'max = {f_rhy.max():.2f} Hz',
+              transform=ax_f.transAxes, ha='right', va='top', fontsize=4.85, color='#1A1A1A',
+              bbox=dict(boxstyle='round,pad=0.24', fc='white', alpha=0.92, ec='#CCCCCC', lw=0.45))
 
     # Panel letters a-f
-    add_panel_label_xy(fig, 0.015, 0.958, 'a')
-    add_panel_label_xy(fig, 0.482, 0.958, 'b')
-    add_panel_label_xy(fig, 0.015, 0.630, 'c')
-    add_panel_label_xy(fig, 0.015, 0.308, 'd')
-    add_panel_label_xy(fig, 0.376, 0.308, 'e')
-    add_panel_label_xy(fig, 0.680, 0.308, 'f')
+    add_panel_label_xy(fig, 0.015, 0.968, 'a')
+    add_panel_label_xy(fig, 0.482, 0.968, 'b')
+    add_panel_label_xy(fig, 0.015, 0.672, 'c')
+    add_panel_label_xy(fig, 0.015, 0.342, 'd')
+    add_panel_label_xy(fig, 0.376, 0.342, 'e')
+    add_panel_label_xy(fig, 0.680, 0.342, 'f')
 
     pdf_path = os.path.join(out_dir, 'BSG_1000_model_benchmark.pdf')
     png_path = os.path.join(out_dir, 'BSG_1000_model_benchmark.png')
@@ -685,7 +683,7 @@ def save_stats_and_caption(data: dict, out_dir: str):
 
 **e**, Temporal firing-rate s.d. (oscillation amplitude, sp/s) versus spatial s.d. of time-averaged neuronal rates (sp/s) at $D = 20$, separating true rhythmic oscillators (high temporal s.d.) from static heterogeneous fixed-point states (low temporal s.d. $< 2$ sp/s but elevated spatial rate s.d., median {np.median(sp_sd[is_real, -1]):.2f} sp/s among real-$\\lambda_1$ networks).
 
-**f**, Simulated peak oscillation frequency (cycles per second, Hz) at $D = 20$ across all rhythmic BSG networks ($n = {rhy20.sum()}$) plotted against the linearized Hopf frequency prediction $f_{{\\mathrm{{Hopf}}}} = f'(20)|\\mathrm{{Im}}\\,\\lambda_1| / (2\\pi\\tau_V)$ (Spearman $\\rho = {rho_f:.2f}$; dashed identity line). Because $\\tau_V = 50$ ms and random Dale matrices yield modest $|\\mathrm{{Im}}\\,\\lambda_1|$, the original BSG model oscillates strictly in a slow regime (median {np.median(f_rhy):.2f} Hz, mean {f_rhy.mean():.2f} $\\pm$ {f_rhy.std():.2f} Hz, maximum {f_rhy.max():.2f} Hz across all 1,000 models), never approaching fast mammalian licking frequencies (6–8 Hz).
+**f**, Distribution of simulated peak oscillation frequencies (cycles per second, Hz; 0.167 Hz FFT bin width) at $D = 20$ across all rhythmic BSG networks ($n = {rhy20.sum()}$, temporal rate $\\mathrm{{s.d.}} \\ge 2$ sp/s); vertical dashed line marks the median. Because $\\tau_V = 50$ ms and random Dale matrices yield modest $|\\mathrm{{Im}}\\,\\lambda_1|$, the original BSG model oscillates strictly in a slow regime (median {np.median(f_rhy):.2f} Hz, mean {f_rhy.mean():.2f} $\\pm$ {f_rhy.std():.2f} Hz, maximum {f_rhy.max():.2f} Hz across all 1,000 models), never approaching fast mammalian licking frequencies (6–8 Hz).
 """
     with open(os.path.join(out_dir, 'BSG_1000_model_benchmark_caption.md'), 'w') as fh:
         fh.write(md_caption)

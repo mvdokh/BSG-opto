@@ -123,7 +123,7 @@ def run(N: int = 200, pct: float = 10.0, d_min: int = 1, d_max: int = 15,
         ax.plot(drives, S[(int(k), False)]['osc'].mean(1), c=c, ls=':', lw=1.2)
     ax.plot([], [], c='k', ls=':', label='dotted: same k, no light')
     ax.axhline(osc_ref, c='k', ls='--', lw=0.8, label=f'reference D = 20 ({osc_ref:.1f})')
-    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D'); ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)')
+    ax.set_yscale('log'); ax.set_xlabel('Tonic drive D'); ax.set_ylabel('Unlit amplitude (rate SD, sp/s)')
     ax.set_title(f'N = {N}, {n_draws} draws per point', fontsize=10); ax.legend(fontsize=7, frameon=False, ncol=2)
 
     for ax, q, ttl in [(axs[1], 'rate_unlitE', 'Unlit E rate during light'),

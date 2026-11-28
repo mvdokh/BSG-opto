@@ -1,0 +1,79 @@
+=== Parameter Sweeps & Alternative 6-8 Hz BSG Oscillators ===
+
+a. Network size N (random W, tau_V=50 ms) (n=20 seeds/point):
+     100 | rhy=12/20 | in6-8= 0/20 | f= 0.69+/-0.40 Hz | SD=  8.0 sp/s
+     200 | rhy=13/20 | in6-8= 0/20 | f= 0.50+/-0.26 Hz | SD=  8.8 sp/s
+     300 | rhy=18/20 | in6-8= 0/20 | f= 0.48+/-0.24 Hz | SD=  9.6 sp/s
+     500 | rhy=20/20 | in6-8= 0/20 | f= 0.42+/-0.18 Hz | SD=  8.5 sp/s
+     800 | rhy=20/20 | in6-8= 0/20 | f= 0.42+/-0.14 Hz | SD=  9.7 sp/s
+
+b. Connectivity C (random W, tau_V=50 ms) (n=20 seeds/point):
+    0.05 | rhy=16/20 | in6-8= 0/20 | f= 0.63+/-0.34 Hz | SD=  7.6 sp/s
+     0.1 | rhy=16/20 | in6-8= 0/20 | f= 0.42+/-0.27 Hz | SD=  7.9 sp/s
+    0.15 | rhy=18/20 | in6-8= 0/20 | f= 0.55+/-0.33 Hz | SD=  8.2 sp/s
+    0.25 | rhy=17/20 | in6-8= 0/20 | f= 0.53+/-0.33 Hz | SD=  7.3 sp/s
+     0.4 | rhy=15/20 | in6-8= 0/20 | f= 0.53+/-0.31 Hz | SD=  8.2 sp/s
+     0.6 | rhy=16/20 | in6-8= 0/20 | f= 0.62+/-0.40 Hz | SD=  5.3 sp/s
+
+c. Transfer gain (random W, tau_V=50 ms) (n=20 seeds/point):
+       1 | rhy= 6/20 | in6-8= 0/20 | f= 0.33+/-0.12 Hz | SD=  3.1 sp/s
+     1.2 | rhy=15/20 | in6-8= 0/20 | f= 0.38+/-0.27 Hz | SD=  8.0 sp/s
+     1.5 | rhy=17/20 | in6-8= 0/20 | f= 0.64+/-0.39 Hz | SD= 12.5 sp/s
+       2 | rhy=20/20 | in6-8= 0/20 | f= 0.52+/-0.25 Hz | SD= 17.3 sp/s
+     2.5 | rhy=20/20 | in6-8= 0/20 | f= 0.50+/-0.25 Hz | SD= 24.2 sp/s
+     3.5 | rhy=20/20 | in6-8= 0/20 | f= 0.52+/-0.26 Hz | SD= 26.3 sp/s
+
+d. Coupling W_rad (random W, tau_V=50 ms) (n=20 seeds/point):
+     0.8 | rhy= 1/20 | in6-8= 0/20 | f= 0.25+/-0.00 Hz | SD=  2.8 sp/s
+       1 | rhy=17/20 | in6-8= 0/20 | f= 0.43+/-0.27 Hz | SD=  7.7 sp/s
+     1.5 | rhy=20/20 | in6-8= 0/20 | f= 0.61+/-0.32 Hz | SD= 15.9 sp/s
+       2 | rhy=20/20 | in6-8= 0/20 | f= 0.45+/-0.24 Hz | SD= 20.8 sp/s
+     2.5 | rhy=20/20 | in6-8= 0/20 | f= 0.48+/-0.30 Hz | SD= 24.6 sp/s
+     3.5 | rhy=20/20 | in6-8= 0/20 | f= 0.55+/-0.28 Hz | SD= 27.8 sp/s
+
+e1. Time constant tau_V (random W) (n=20 seeds/point):
+      50 | rhy=13/20 | in6-8= 0/20 | f= 0.40+/-0.26 Hz | SD=  7.9 sp/s
+      30 | rhy=12/20 | in6-8= 0/20 | f= 0.72+/-0.49 Hz | SD=  8.9 sp/s
+      18 | rhy=12/20 | in6-8= 0/20 | f= 1.36+/-0.94 Hz | SD=  8.6 sp/s
+      12 | rhy=11/20 | in6-8= 0/20 | f= 1.91+/-1.17 Hz | SD=  9.4 sp/s
+       8 | rhy=11/20 | in6-8= 2/20 | f= 2.88+/-1.76 Hz | SD=  8.9 sp/s
+       5 | rhy=11/20 | in6-8= 0/20 | f= 4.57+/-2.82 Hz | SD=  9.0 sp/s
+       4 | rhy=11/20 | in6-8= 2/20 | f= 5.74+/-3.32 Hz | SD=  9.1 sp/s
+       3 | rhy=11/20 | in6-8= 1/20 | f= 7.51+/-4.59 Hz | SD=  9.1 sp/s
+
+e2. Time constant tau_V (rotational Dale W, psi=40 deg) (n=20 seeds/point):
+      50 | rhy=20/20 | in6-8= 0/20 | f= 2.66+/-0.13 Hz | SD= 14.7 sp/s
+      35 | rhy=20/20 | in6-8= 0/20 | f= 3.79+/-0.17 Hz | SD= 14.9 sp/s
+      25 | rhy=20/20 | in6-8= 0/20 | f= 5.29+/-0.23 Hz | SD= 15.1 sp/s
+      18 | rhy=20/20 | in6-8=20/20 | f= 7.31+/-0.32 Hz | SD= 15.3 sp/s
+      14 | rhy=20/20 | in6-8= 0/20 | f= 9.35+/-0.41 Hz | SD= 15.5 sp/s
+      11 | rhy=20/20 | in6-8= 0/20 | f=11.81+/-0.51 Hz | SD= 15.7 sp/s
+
+f1. Phase shift psi (tau_V=18 ms, N=300, alpha=0.68) (n=20 seeds/point):
+       0 | rhy= 3/20 | in6-8= 0/20 | f= 0.25+/-0.05 Hz | SD= 15.1 sp/s
+      10 | rhy=20/20 | in6-8= 0/20 | f= 1.52+/-0.22 Hz | SD= 21.8 sp/s
+      20 | rhy=20/20 | in6-8= 0/20 | f= 3.18+/-0.19 Hz | SD= 20.7 sp/s
+      30 | rhy=20/20 | in6-8= 0/20 | f= 5.03+/-0.21 Hz | SD= 19.0 sp/s
+      40 | rhy=20/20 | in6-8=20/20 | f= 7.31+/-0.32 Hz | SD= 15.3 sp/s
+      48 | rhy=20/20 | in6-8= 0/20 | f= 9.57+/-0.35 Hz | SD=  9.4 sp/s
+      55 | rhy= 0/20 | in6-8= 0/20 | static fixed point
+
+f2. Phase shift psi (tau_V=50 ms, N=500, alpha=0.85) (n=20 seeds/point):
+       0 | rhy= 8/20 | in6-8= 0/20 | f= 0.23+/-0.03 Hz | SD=  5.6 sp/s
+      15 | rhy=20/20 | in6-8= 0/20 | f= 0.85+/-0.03 Hz | SD= 30.4 sp/s
+      30 | rhy=20/20 | in6-8= 0/20 | f= 1.84+/-0.03 Hz | SD= 29.7 sp/s
+      45 | rhy=20/20 | in6-8= 0/20 | f= 3.15+/-0.05 Hz | SD= 27.6 sp/s
+      58 | rhy=20/20 | in6-8= 0/20 | f= 4.96+/-0.10 Hz | SD= 23.2 sp/s
+      65 | rhy=20/20 | in6-8=20/20 | f= 6.54+/-0.13 Hz | SD= 17.5 sp/s
+      68 | rhy=20/20 | in6-8=20/20 | f= 7.44+/-0.14 Hz | SD= 13.1 sp/s
+      72 | rhy= 0/20 | in6-8= 0/20 | static fixed point
+
+Candidate 6-8 Hz mechanisms (n=30 seeds):
+  fast_18      | rhy=16/30 | in6-8= 0/30 | f= 1.25+/-0.71 Hz | H=0.93
+  fast_4       | rhy=16/30 | in6-8= 4/30 | f= 5.59+/-3.31 Hz | H=0.94
+  adapt        | rhy=27/30 | in6-8= 2/30 | f= 4.04+/-1.25 Hz | H=0.89
+  asym_tau     | rhy=30/30 | in6-8=30/30 | f= 7.19+/-0.00 Hz | H=0.28
+  delay_I      | rhy=30/30 | in6-8=30/30 | f= 6.88+/-0.00 Hz | H=0.00
+  cyclic_3     | rhy=30/30 | in6-8=30/30 | f= 7.17+/-0.36 Hz | H=0.87
+  steep_50     | rhy=30/30 | in6-8=30/30 | f= 7.44+/-0.13 Hz | H=1.00
+  licking      | rhy=30/30 | in6-8=30/30 | f= 7.30+/-0.31 Hz | H=0.99

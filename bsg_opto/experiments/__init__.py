@@ -12,6 +12,7 @@ from . import (
     top10_geff_figure,
     drive_sweep_rasters,
     bsg_benchmark_1000,
+    frequency_mechanisms,
     licking_model,
     licking_opto_figure,
 )
@@ -29,6 +30,7 @@ EXPERIMENTS = {
     'top10-geff': top10_geff_figure,
     'drive-sweep-rasters': drive_sweep_rasters,
     'bsg-benchmark-1000': bsg_benchmark_1000,
+    'frequency-mechanisms': frequency_mechanisms,
     'licking-model': licking_model,
     'licking-opto-figure': licking_opto_figure,
 }

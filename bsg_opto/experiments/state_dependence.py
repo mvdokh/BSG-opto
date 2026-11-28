@@ -221,7 +221,7 @@ def run(pct: float = 10.0, i_max: float = 80.0, n_draws: int = 20,
     ax.plot([], [], c='k', ls=':', label='dotted: no light')
     ax.axhline(osc_ref, c='k', ls='--', lw=0.8, label=f'reference rhythm ({osc_ref:.1f})')
     ax.set_yscale('log'); ax.set_xlabel('Baseline drive μ  (quiescent → aroused)')
-    ax.set_ylabel('Rhythmicity of unlit cells (SD, Hz)'); ax.set_title('Same light, different states', fontsize=10)
+    ax.set_ylabel('Unlit amplitude (rate SD, sp/s)'); ax.set_title('Same light, different states', fontsize=10)
     ax.legend(fontsize=6, frameon=False, ncol=2, loc='upper left', bbox_to_anchor=(0.0, 0.92))
 
     ax = axs[0, 1]
